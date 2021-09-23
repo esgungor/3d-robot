@@ -440,17 +440,17 @@ function animate() {
     let alpha = Math.abs(myCar.rotation.z);
     let condition = Math.abs((myCar.rotation.z * 180) / Math.PI);
     if (condition < 90 || (condition < 360 && condition > 270)) {
-      myCar.position.z -= currentPos.y / 800;
+      myCar.position.z -= (Math.cos(alpha) * currentPos.y) / 800;
 
       myCar.position.x += (Math.sin(alpha) * currentPos.y) / 800;
       camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-      camera.position.z -= currentPos.y / 800;
+      camera.position.z -= (Math.cos(alpha) * currentPos.y) / 800;
     } else if (condition > 90 && condition < 270) {
-      myCar.position.z += (Math.sin(alpha) * currentPos.y) / 800;
+      myCar.position.z -= (Math.cos(alpha) * currentPos.y) / 800;
 
-      myCar.position.x += currentPos.y / 800;
-      camera.position.x += currentPos.y / 800;
-      camera.position.z += (Math.sin(alpha) * currentPos.y) / 800;
+      myCar.position.x += (Math.sin(alpha) * currentPos.y) / 800;
+      camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
+      camera.position.z -= (Math.cos(alpha) * currentPos.y) / 800;
     }
     // console.log(myCar.rotation.z);
   }
