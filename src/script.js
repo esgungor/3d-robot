@@ -6,9 +6,11 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import * as dat from "dat.gui";
+import dom from "dat.gui/src/dat/dom/dom";
 
 // Debug
 const gui = new dat.GUI();
+const maxDiff = 100;
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -183,6 +185,7 @@ let loader = new GLTFLoader();
 let myCar;
 let test;
 let wheels = [];
+let cameraPos = { x: 0, y: 0 };
 // const dracoLoader = new DRACOLoader();
 // dracoLoader.setDecoderPath("draco/gltf/");
 // loader.setDRACOLoader(dracoLoader);
@@ -212,30 +215,22 @@ loader.load("gltf/last_change.gltf", (gltf) => {
   console.log(gltf.scene.children[0]);
   scene.add(gltf.scene);
 });
-let throttle = 0.01;
 let counter = 0;
 console.log(myCar);
+
+document.addEventListener("keyup", (e) => {
+  console.log(e.code);
+  if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+    throttle = 0.01;
+    counter = 0;
+  }
+});
 document.addEventListener(
   "keydown",
   (e) => {
-    console.log(e.code);
-
     let keyCode = e.code;
-    const time = -performance.now() / 1000;
-    if (keyCode === "KeyF") {
-      throttle *= 5;
-    }
-    if (keyCode === "KeyR") {
-      throttle = 0.01;
-      counter = 0;
-    }
+
     if (keyCode === "ArrowUp") {
-      if (throttle < 0.5 && counter === 20) {
-        throttle *= 3;
-        counter = 0;
-      } else if (throttle < 1) {
-        counter += 1;
-      }
       console.log(wheels);
       grid.position.z -= throttle;
 
@@ -244,14 +239,184 @@ document.addEventListener(
       }
     }
     if (keyCode === "ArrowDown") {
+      if (throttle < 0.5 && counter === 20) {
+        throttle *= 3;
+        counter = 0;
+      } else if (throttle < 1) {
+        counter += 1;
+      }
       grid.position.z += throttle;
       for (let i = 0; i < wheels.length; i++) {
         wheels[i].rotation.x -= throttle;
       }
     }
+    if (keyCode === "ArrowRight") {
+      console.log(wheels);
+      if (throttle < 0.5 && counter === 20) {
+        throttle *= 3;
+        counter = 0;
+      } else if (throttle < 1) {
+        counter += 1;
+      }
+      grid.position.x += throttle;
+    }
+    if (keyCode === "ArrowLeft") {
+      console.log(wheels);
+      if (throttle < 0.5 && counter === 20) {
+        throttle *= 3;
+        counter = 0;
+      } else if (throttle < 1) {
+        counter += 1;
+      }
+      grid.position.x -= throttle;
+    }
   },
   false
 );
+
+document.addEventListener(
+  "keydown",
+  (e) => {
+    let keyCode = e.code;
+  },
+  false
+);
+
+/*
+
+Fast and Furious: Tunahan and Engin
+
+*/
+
+const domElement = document.createElement("div");
+document.body.append(domElement);
+domElement.style.zIndex = 100;
+domElement.style.position = "absolute";
+domElement.style.bottom = "60px";
+domElement.style.right = "60px";
+domElement.style.backgroundColor = "rgba(0,0,0,0.2)";
+domElement.style.borderRadius = "99px";
+domElement.style.width = "200px";
+domElement.style.height = "200px";
+
+const miniDom = document.createElement("div");
+document.body.append(domElement);
+miniDom.style.zIndex = 1000;
+miniDom.style.position = "relative";
+miniDom.style.top = "25%";
+miniDom.style.translate = "translateY(-50%)";
+miniDom.style.margin = "auto";
+miniDom.style.backgroundColor = "rgba(0,0,0,0.6)";
+miniDom.style.borderRadius = "99px";
+miniDom.style.width = "100px";
+miniDom.style.height = "100px";
+
+const positionDomElement = document.createElement("div");
+document.body.append(domElement);
+positionDomElement.style.zIndex = 100;
+positionDomElement.style.position = "absolute";
+positionDomElement.style.bottom = "60px";
+positionDomElement.style.left = "60px";
+positionDomElement.style.backgroundColor = "rgba(0,0,0,0.2)";
+positionDomElement.style.borderRadius = "99px";
+positionDomElement.style.width = "200px";
+positionDomElement.style.height = "200px";
+
+const miniDom2 = document.createElement("div");
+document.body.append(positionDomElement);
+miniDom2.style.zIndex = 1000;
+miniDom2.style.position = "relative";
+miniDom2.style.top = "25%";
+miniDom2.style.translate = "translateY(-50%)";
+miniDom2.style.margin = "auto";
+miniDom2.style.backgroundColor = "rgba(0,0,0,0.6)";
+miniDom2.style.borderRadius = "99px";
+miniDom2.style.width = "100px";
+miniDom2.style.height = "100px";
+
+domElement.appendChild(miniDom);
+positionDomElement.appendChild(miniDom2);
+let isCameraMove = false;
+
+const move = (e) => {
+  if (dragStart === null) return;
+  e.preventDefault();
+  miniDom.style.transition = ".0s";
+
+  const xDiff = e.clientX - dragStart.x;
+  const yDiff = e.clientY - dragStart.y;
+  const angle = Math.atan2(yDiff, xDiff);
+  const distance = Math.min(maxDiff, Math.hypot(xDiff, yDiff));
+  const xNew = distance * Math.cos(angle);
+  const yNew = distance * Math.sin(angle);
+  if (isCameraMove) {
+    miniDom2.style.transform = `translate3d(${xNew}px, 0px, 0px)`;
+
+    cameraPos = {
+      x: xNew,
+      y: yNew,
+    };
+    return;
+  }
+  miniDom.style.transform = `translate3d(0px, ${yNew}px, 0px)`;
+
+  currentPos = {
+    x: xNew,
+    y: yNew,
+  };
+};
+const mouseDownHandler = (e) => {
+  console.log("Triggered");
+  miniDom.style.transition = ".0s";
+
+  dragStart = {
+    x: e.clientX,
+    y: e.clientY,
+  };
+};
+
+const cameraMouseDownHandler = (e) => {
+  isCameraMove = true;
+  miniDom2.style.transition = ".0s";
+
+  dragStart = {
+    x: e.clientX,
+    y: e.clientY,
+  };
+};
+
+const mouseUpHandler = (e) => {
+  console.log("Triggered");
+  if (dragStart === null) return;
+  if (isCameraMove) {
+    miniDom2.style.transition = ".2s";
+    miniDom2.style.transform = `translate3d(0px, 0px, 0px)`;
+    dragStart = null;
+    isCameraMove = false;
+    cameraPos = { x: 0, y: 0 };
+  }
+  miniDom.style.transition = ".2s";
+  miniDom.style.transform = `translate3d(0px, 0px, 0px)`;
+
+  dragStart = null;
+  currentPos = { x: 0, y: 0 };
+};
+
+// miniDom.style.transform = "translate (-50%,-50%)";
+let dragStart = null;
+miniDom.addEventListener("mousedown", mouseDownHandler);
+miniDom2.addEventListener("mousedown", cameraMouseDownHandler);
+
+let currentPos = { x: 0, y: 0 };
+
+document.addEventListener("mousemove", move);
+
+document.addEventListener("mouseup", mouseUpHandler);
+
+/*
+
+
+*/
 
 function animate() {
   // for (let i = 0; i < wheels.length; i++) {
@@ -261,7 +426,40 @@ function animate() {
   // if (myCar) myCar.rotation.z += 0.01;
   //   myCar.position.z += 1;
   // camera.position.z += 1;
+  if (myCar) {
+    if (cameraPos.y < 50) {
+      myCar.rotation.z -= cameraPos.x / 10000;
+    } else {
+      myCar.rotation.z += cameraPos.x / 10000;
+    }
+    // myCar.position.x += currentPos.x / 800;
+    // console.log(myCar.rotation.z);
+    // console.log(Math.sin(-1.52582));
+    // myCar.position.z -= currentPos.y / 800;
+    // console.log(myCar.rotation.z);
+    let alpha = Math.abs(myCar.rotation.z);
+    let condition = Math.abs((myCar.rotation.z * 180) / Math.PI);
+    if (condition < 90 || (condition < 360 && condition > 270)) {
+      myCar.position.z -= currentPos.y / 800;
 
+      myCar.position.x += (Math.sin(alpha) * currentPos.y) / 800;
+      camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
+      camera.position.z -= currentPos.y / 800;
+    } else if (condition > 90 && condition < 270) {
+      myCar.position.z += (Math.sin(alpha) * currentPos.y) / 800;
+
+      myCar.position.x += currentPos.y / 800;
+      camera.position.x += currentPos.y / 800;
+      camera.position.z += (Math.sin(alpha) * currentPos.y) / 800;
+    }
+    // console.log(myCar.rotation.z);
+  }
+
+  // grid.position.x += currentPos.x / 800;
+  // grid.position.z += currentPos.y / 800;
+  for (let i = 0; i < wheels.length; i++) {
+    wheels[i].rotation.x += currentPos.y / 800;
+  }
   //   camera.position.x += 0.01;
   //   camera.rotation.y += 0.01;
   //   camera.rotation.z += 0.01;
