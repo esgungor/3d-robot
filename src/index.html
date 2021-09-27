@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<style>
-    .projectBar {
-        position: fixed;
-        background-color: rgba(0, 0, 0, 0.4);
-        color: white;
-        width: 100%;
-        z-index: 10000;
-        padding: 10px;
-        text-align: center;
-    }
-</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,8 +11,25 @@
 </head>
 <body>
     <nav class="projectBar">
-        <h2>Demo navigation interface for Cloud Robotics</h2>
+        <span class="menu-item">Robot ID</span>
+        <span class="menu-item">Battery</span>
+        <span class="menu-item">Status</span>
+        <span class="menu-item">Log</span>
+        <span class="menu-item">PS4 </span>
+
+
+
     </nav>
     <canvas class="webgl"></canvas>
+    <div class="view-container">
+<!-- <div id="map" class="map"></div> -->
+
+<!-- <div class="camera"></div> -->
+    </div>
+    <script src="map.js"></script>
+    <script src="http://static.robotwebtools.org/roslibjs/current/roslib.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4CZPzMFcExCkLdnl6lkfQ8D1TlXc92NE&callback=initMap&libraries=&v=weekly"
+        async></script>
+
 </body>
 </html>

@@ -1,15 +1,18 @@
 import "./style.css";
+
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
-
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import * as dat from "dat.gui";
 import dom from "dat.gui/src/dat/dom/dom";
+import { getGamepadState } from "./gamepad";
+
+//Map
 
 // Debug
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 const maxDiff = 100;
 
 // Canvas
@@ -21,8 +24,26 @@ const scene = new THREE.Scene();
 // Objects
 const geometry = new THREE.TorusGeometry(0.7, 0.2, 16, 100);
 
-// Materials
+//line
 
+// let positions;
+
+const lineGeometry = new THREE.BufferGeometry();
+lineGeometry.setDrawRange(0, 2);
+var positions = new Float32Array(500 * 3); // 3 vertices per point
+
+lineGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+const line = new THREE.Line(lineGeometry, lineMaterial);
+
+var positions = line.geometry.attributes.position.array;
+
+console.log(line.geometry.attributes.position);
+
+scene.add(line);
+
+// Materials
 const material = new THREE.MeshBasicMaterial();
 material.color = new THREE.Color(0xff0000);
 
@@ -175,48 +196,63 @@ const glassMaterial = new THREE.MeshPhysicalMaterial({
 
 // Car
 
-const shadow = new THREE.TextureLoader().load("gltf/ferrari_ao.png");
+// const shadow = new THREE.TextureLoader().load("gltf/ferrari_ao.png");
 
 /**
  * Animate
  */
 console.log(camera.position);
 let loader = new GLTFLoader();
+let myRobot;
+let myRobotTop;
+let myRobotTopGun;
+let myRobotDown;
+
+let robotWheels = [];
 let myCar;
 let test;
+let newTest;
 let wheels = [];
 let cameraPos = { x: 0, y: 0 };
 // const dracoLoader = new DRACOLoader();
 // dracoLoader.setDecoderPath("draco/gltf/");
 // loader.setDRACOLoader(dracoLoader);
 
-loader.load("gltf/last_change.gltf", (gltf) => {
-  myCar = gltf.scene.children[0];
+loader.load("gltf/parent.gltf", (gltf) => {
+  myRobot = gltf.scene.children[0];
+  myRobotTop = myRobot.getObjectByName("node_id6");
+  myRobotTopGun = myRobotTop.getObjectByName("node_id8");
 
-  // myCar.getObjectByName("body").material = bodyMaterial;
+  myRobotDown = myRobot.getObjectByName("node_id57");
+
+  wheels.push(
+    myRobotDown.getObjectByName("node_id197").getObjectByName("node_id214"),
+
+    myRobotDown.getObjectByName("node_id197").getObjectByName("node_id229"),
+    myRobotDown.getObjectByName("node_id62"),
+    myRobotDown.getObjectByName("node_id244")
+  );
   // myCar.getObjectByName("rim_fl").material = detailsMaterial;
   // myCar.getObjectByName("rim_fr").material = detailsMaterial;
   // myCar.getObjectByName("rim_rr").material = detailsMaterial;
   // myCar.getObjectByName("rim_rl").material = detailsMaterial;
   // myCar.getObjectByName("trim").material = detailsMaterial;
-  wheels.push(
-    myCar.getObjectByName("Cylinder007"),
-    myCar.getObjectByName("Cylinder011"),
-    myCar.getObjectByName("Cylinder013"),
-    myCar.getObjectByName("Plane036").getObjectByName("Cylinder012")
-  );
+  // wheels.push(
+  //   myCar.getObjectByName("Cylinder007"),
+  //   myCar.getObjectByName("Cylinder011"),
+  //   myCar.getObjectByName("Cylinder013"),
+  //   myCar.getObjectByName("Plane036").getObjectByName("Cylinder012")
+  // );
   // myCar.getObjectByName("glass").material = glassMaterial;
-  console.log(wheels);
-  // myCar.scale.set(10, 10, 10);
+  // console.log(wheels);
+  // myCar.scale.set(0.01, 0.01, 0.01);
   //   myCar.position.x = 0;
 
   //   myCar.position.z = 0;
 
-  console.log(gltf.scene.children[0]);
   scene.add(gltf.scene);
 });
 let counter = 0;
-console.log(myCar);
 
 document.addEventListener("keyup", (e) => {
   console.log(e.code);
@@ -291,7 +327,7 @@ Fast and Furious: Tunahan and Engin
 const domElement = document.createElement("div");
 document.body.append(domElement);
 domElement.style.zIndex = 100;
-domElement.style.position = "absolute";
+domElement.style.position = "fixed";
 domElement.style.bottom = "60px";
 domElement.style.right = "60px";
 domElement.style.backgroundColor = "rgba(0,0,0,0.2)";
@@ -314,7 +350,7 @@ miniDom.style.height = "100px";
 const positionDomElement = document.createElement("div");
 document.body.append(domElement);
 positionDomElement.style.zIndex = 100;
-positionDomElement.style.position = "absolute";
+positionDomElement.style.position = "fixed";
 positionDomElement.style.bottom = "60px";
 positionDomElement.style.left = "60px";
 positionDomElement.style.backgroundColor = "rgba(0,0,0,0.2)";
@@ -324,7 +360,7 @@ positionDomElement.style.height = "200px";
 
 const miniDom2 = document.createElement("div");
 document.body.append(positionDomElement);
-miniDom2.style.zIndex = 1000;
+miniDom2.style.zIndex = 100000;
 miniDom2.style.position = "relative";
 miniDom2.style.top = "25%";
 miniDom2.style.translate = "translateY(-50%)";
@@ -338,63 +374,109 @@ domElement.appendChild(miniDom);
 positionDomElement.appendChild(miniDom2);
 let isCameraMove = false;
 
+const angleMove = (e) => {
+  let xDiff = 0;
+  let yDiff = 0;
+  if (dragStart2 === null) return;
+
+  if (e.changedTouches) {
+    console.log("touchscreen clicked");
+
+    xDiff = e.changedTouches[0].clientX - dragStart2.x;
+    yDiff = e.changedTouches[0].clientY - dragStart2.y;
+  } else {
+    xDiff = e.clientX - dragStart2.x;
+    yDiff = e.clientY - dragStart2.y;
+  }
+  e.preventDefault();
+
+  const newAngle = Math.atan2(yDiff, xDiff);
+  const newDistance = Math.min(maxDiff, Math.hypot(xDiff, yDiff));
+  const multiX = newDistance * Math.cos(newAngle);
+  const multiY = newDistance * Math.sin(newAngle);
+  cameraPos = {
+    x: multiX,
+    y: multiY,
+  };
+  miniDom2.style.transform = `translate3d(${multiX}px, 0px, 0px)`;
+};
+
 const move = (e) => {
   if (dragStart === null) return;
   e.preventDefault();
-  miniDom.style.transition = ".0s";
 
-  const xDiff = e.clientX - dragStart.x;
-  const yDiff = e.clientY - dragStart.y;
+  miniDom.style.transition = ".0s";
+  let xDiff = 0;
+  let yDiff = 0;
+
+  if (e.changedTouches) {
+    xDiff = e.changedTouches[0].clientX - dragStart.x;
+    yDiff = e.changedTouches[0].clientY - dragStart.y;
+    // if (e.changedTouches[1]) {
+    //   xDiffRotation = e.changedTouches[0].clientX - dragStart2.x;
+    //   yDiffRotation = e.changedTouches[0].clientY - dragStart2.y;
+    // }
+  } else {
+    xDiff = e.clientX - dragStart.x;
+    yDiff = e.clientY - dragStart.y;
+  }
+
   const angle = Math.atan2(yDiff, xDiff);
   const distance = Math.min(maxDiff, Math.hypot(xDiff, yDiff));
   const xNew = distance * Math.cos(angle);
   const yNew = distance * Math.sin(angle);
-  if (isCameraMove) {
-    miniDom2.style.transform = `translate3d(${xNew}px, 0px, 0px)`;
 
-    cameraPos = {
-      x: xNew,
-      y: yNew,
-    };
-    return;
-  }
-  miniDom.style.transform = `translate3d(0px, ${yNew}px, 0px)`;
+  miniDom.style.transform = `translate3d(${xNew}px, ${yNew}px, 0px)`;
 
   currentPos = {
     x: xNew,
     y: yNew,
   };
 };
+
 const mouseDownHandler = (e) => {
   console.log("Triggered");
-  miniDom.style.transition = ".0s";
+  e.preventDefault();
 
-  dragStart = {
-    x: e.clientX,
-    y: e.clientY,
-  };
+  miniDom.style.transition = ".0s";
+  if (e.changedTouches) {
+    console.log("touchscreen clicked");
+
+    dragStart = {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY,
+    };
+  } else {
+    dragStart = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+  }
 };
 
 const cameraMouseDownHandler = (e) => {
   isCameraMove = true;
-  miniDom2.style.transition = ".0s";
+  e.preventDefault();
+  // miniDom2.style.transition = ".0s";
+  if (e.changedTouches) {
+    console.log("touchscreen clicked");
 
-  dragStart = {
-    x: e.clientX,
-    y: e.clientY,
-  };
+    dragStart2 = {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY,
+    };
+  } else {
+    dragStart2 = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+  }
 };
 
 const mouseUpHandler = (e) => {
   console.log("Triggered");
   if (dragStart === null) return;
-  if (isCameraMove) {
-    miniDom2.style.transition = ".2s";
-    miniDom2.style.transform = `translate3d(0px, 0px, 0px)`;
-    dragStart = null;
-    isCameraMove = false;
-    cameraPos = { x: 0, y: 0 };
-  }
+
   miniDom.style.transition = ".2s";
   miniDom.style.transform = `translate3d(0px, 0px, 0px)`;
 
@@ -402,22 +484,54 @@ const mouseUpHandler = (e) => {
   currentPos = { x: 0, y: 0 };
 };
 
+const angleMouseUpHandler = (e) => {
+  e.preventDefault();
+
+  if (dragStart2 === null) return;
+  miniDom2.style.transition = ".2s";
+  miniDom2.style.transform = `translate3d(0px, 0px, 0px)`;
+  dragStart2 = null;
+  cameraPos = { x: 0, y: 0 };
+};
+
 // miniDom.style.transform = "translate (-50%,-50%)";
 let dragStart = null;
+let dragStart2 = null;
+
 miniDom.addEventListener("mousedown", mouseDownHandler);
 miniDom2.addEventListener("mousedown", cameraMouseDownHandler);
+
+miniDom.addEventListener("touchstart", mouseDownHandler);
+
+miniDom2.addEventListener("touchstart", cameraMouseDownHandler);
 
 let currentPos = { x: 0, y: 0 };
 
 document.addEventListener("mousemove", move);
+miniDom.addEventListener("touchmove", move);
+document.addEventListener("mousemove", angleMove);
+miniDom2.addEventListener("touchmove", angleMove);
 
 document.addEventListener("mouseup", mouseUpHandler);
+miniDom.addEventListener("touchend", mouseUpHandler);
+document.addEventListener("mouseup", angleMouseUpHandler);
+miniDom2.addEventListener("touchend", angleMouseUpHandler);
 
 /*
 
 
 */
+let lineCounter = 2;
 
+let samplingCounter = 0;
+const flag = false;
+
+let degree = null;
+let tempDegree = null;
+
+setInterval(() => {
+  tempDegree = getGamepadState();
+}, 10);
 function animate() {
   // for (let i = 0; i < wheels.length; i++) {
   //   console.log(wheels[i].rotation);
@@ -426,31 +540,63 @@ function animate() {
   // if (myCar) myCar.rotation.z += 0.01;
   //   myCar.position.z += 1;
   // camera.position.z += 1;
-  if (myCar) {
-    if (cameraPos.y < 50) {
-      myCar.rotation.z -= cameraPos.x / 10000;
-    } else {
-      myCar.rotation.z += cameraPos.x / 10000;
+  // if (top) top.rotation.y += 0.01;
+  // if (down) down.rotation.y += 0.01;
+  // if (down) down.rotation.y += 0.01;
+
+  // if (myRobot) {
+  //   myRobot.position.x += currentPos.x / 1000;
+  //   myRobot.position.z += currentPos.y / 1000;
+  //   camera.position.x += currentPos.x / 1000;
+  //   camera.position.z += currentPos.y / 1000;
+  // }
+
+  if (degree !== tempDegree && tempDegree !== undefined) {
+    console.log(tempDegree);
+    degree = tempDegree;
+    if (myRobot) {
+      myRobot.position.z +=
+        (-1 * degree?.linearX * (1 - -1 * myRobot.rotation.y)) / 50;
+      myRobot.rotation.y += degree?.angularX / 50;
+
+      myRobot.position.x += (degree?.linearX * -1 * myRobot.rotation.y) / 50;
     }
+  }
+  let alpha = 0;
+
+  // controls.update();
+  if (myRobot) {
+    if (currentPos.y < 50) {
+      myRobot.rotation.y -= cameraPos.x / 10000;
+    } else {
+      myRobot.rotation.y += cameraPos.x / 10000;
+    }
+
+    // myCar.rotation.z += cameraPos.x - 50 / 10000;
+
     // myCar.position.x += currentPos.x / 800;
     // console.log(myCar.rotation.z);
     // console.log(Math.sin(-1.52582));
     // myCar.position.z -= currentPos.y / 800;
+
     // console.log(myCar.rotation.z);
-    let alpha = Math.abs(myCar.rotation.z);
-    let condition = Math.abs((myCar.rotation.z * 180) / Math.PI);
+    alpha = myRobot.rotation.y;
+    let condition = (myRobot.rotation.y * 180) / Math.PI;
+    // console.log((myRobot.rotation.y * 180) / Math.PI);
+    // console.log(condition, "condition data");
+    if (condition < 0) condition = 360 + condition;
+
     if (condition < 90 || (condition < 360 && condition > 270)) {
-      myCar.position.z -= (Math.cos(alpha) * currentPos.y) / 800;
-
-      myCar.position.x += (Math.sin(alpha) * currentPos.y) / 800;
+      myRobot.position.z += (Math.cos(alpha) * currentPos.y) / 800;
+      myRobot.position.x += (Math.sin(alpha) * currentPos.y) / 800;
       camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-      camera.position.z -= (Math.cos(alpha) * currentPos.y) / 800;
+      camera.position.z += (Math.cos(alpha) * currentPos.y) / 800;
     } else if (condition > 90 && condition < 270) {
-      myCar.position.z -= (Math.cos(alpha) * currentPos.y) / 800;
+      myRobot.position.z += (Math.cos(alpha) * currentPos.y) / 800;
 
-      myCar.position.x += (Math.sin(alpha) * currentPos.y) / 800;
+      myRobot.position.x += (Math.sin(alpha) * currentPos.y) / 800;
       camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-      camera.position.z -= (Math.cos(alpha) * currentPos.y) / 800;
+      camera.position.z += (Math.cos(alpha) * currentPos.y) / 800;
     }
     // console.log(myCar.rotation.z);
   }
@@ -460,6 +606,28 @@ function animate() {
   for (let i = 0; i < wheels.length; i++) {
     wheels[i].rotation.x += currentPos.y / 800;
   }
+  let x = 0;
+  let y = 0;
+  let z = 0;
+
+  if (positions)
+    positions[lineCounter * 3 - 1] += (Math.cos(alpha) * currentPos.y) / 800;
+  if (positions)
+    positions[lineCounter * 3 - 3] += (Math.sin(alpha) * currentPos.y) / 800;
+  if (cameraPos.x !== 0) samplingCounter++;
+  if (cameraPos.x !== 0 && samplingCounter === 30) {
+    lineGeometry.setDrawRange(0, lineCounter + 1);
+    lineCounter += 1;
+
+    positions[lineCounter * 3 - 1] += positions[lineCounter * 3 - 1 - 3];
+    positions[lineCounter * 3 - 3] += positions[lineCounter * 3 - 3 - 3];
+
+    // prevPos = currentPos.x;
+    samplingCounter = 0;
+  }
+
+  line.geometry.attributes.position.needsUpdate = true; // required after the first render
+
   //   camera.position.x += 0.01;
   //   camera.rotation.y += 0.01;
   //   camera.rotation.z += 0.01;
