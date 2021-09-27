@@ -557,8 +557,9 @@ function animate() {
     if (myRobot) {
       myRobot.position.z +=
         (-1 * degree?.linearX * (1 - -1 * myRobot.rotation.y)) / 50;
-      myRobot.rotation.y += degree?.angularX / 50;
-
+      if (myRobot.rotation.y < 6 && myRobot.rotation.y > -6)
+        myRobot.rotation.y += degree?.angularX / 50;
+      else myRobot.rotation.y = 0;
       myRobot.position.x += (degree?.linearX * -1 * myRobot.rotation.y) / 50;
     }
   }
