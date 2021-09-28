@@ -51,7 +51,7 @@ export function getGamepadState() {
       angularX < -0.15
     ) {
       console.log(angularX, linearX, stopSpeedChasis);
-      return { angularX, linearX };
+      return { angularX, linearX, pitch_angle, yaw_angle };
       stopSpeedChasis = 1;
     } else {
       if (stopSpeedChasis == 1) {
@@ -71,10 +71,7 @@ export function getGamepadState() {
       pitch_angle < -0.15
     ) {
       console.log(pitch_angle, yaw_angle, stopSpeedGimbal);
-      log(pitch_angle, yaw_angle, stopSpeedGimbal);
-      gimbal.linear.x = yaw_angle * 60;
-      gimbal.angular.x = pitch_angle * -1 * 60;
-      gimbalVel.publish(gimbal);
+      console.log(pitch_angle, yaw_angle, stopSpeedGimbal);
       stopSpeedGimbal = 1;
     } else {
       if (stopSpeedGimbal == 1) {
@@ -82,12 +79,10 @@ export function getGamepadState() {
         pitch_angle = 0;
         console.log("SpeedStop:", pitch_angle, yaw_angle, stopSpeedGimbal);
         console.log("SpeedStop:", pitch_angle, yaw_angle);
-        gimbal.linear.x = yaw_angle;
-        gimbal.angular.x = pitch_angle;
-        gimbalVel.publish(gimbal);
         stopSpeedGimbal = 0;
       }
     }
+    return { angularX, linearX, pitch_angle, yaw_angle };
   }
 
   // Print the pressed buttons to our HTML

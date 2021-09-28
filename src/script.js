@@ -34,8 +34,10 @@ var positions = new Float32Array(500 * 3); // 3 vertices per point
 
 lineGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
-const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+const lineMaterial = new THREE.LineDashedMaterial({ color: 0xff0000 });
 const line = new THREE.Line(lineGeometry, lineMaterial);
+line.geometry.computeBoundingSphere();
+line.frustumCulled = false;
 
 var positions = line.geometry.attributes.position.array;
 
@@ -52,7 +54,7 @@ material.color = new THREE.Color(0xff0000);
 // scene.add(sphere)
 
 // Lights
-const hlight = new THREE.AmbientLight(0x404040, 100);
+const hlight = new THREE.AmbientLight(0x404040, 10);
 scene.add(hlight);
 // const pointLight = new THREE.PointLight(0xffffff, 0.1);
 // pointLight.position.x = 2;
@@ -90,7 +92,7 @@ const camera = new THREE.PerspectiveCamera(
   0.01,
   5000
 );
-camera.position.z = 20;
+camera.position.z = 10;
 camera.position.y = 2.5;
 camera.rotation.x = -(40 / 180) * Math.PI;
 
@@ -121,7 +123,7 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 0.5, 0);
+controls.target.set(0, 0, 0);
 controls.update();
 
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -136,10 +138,10 @@ grid.material.depthWrite = false;
 grid.material.transparent = true;
 scene.add(grid);
 
-// const directionalLight = new THREE.DirectionalLight(0xffffff, 100);
-// directionalLight.position.set(0, 1, 0);
-// directionalLight.castShadow = true;
-// scene.add(directionalLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 10);
+directionalLight.position.set(0, 1, 0);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
 
 // const light = new THREE.PointLight(0xc4c4c4, 10);
 // light.position.set(0, 300, 500);
@@ -179,28 +181,6 @@ const glassMaterial = new THREE.MeshPhysicalMaterial({
   transparent: true,
 });
 
-// const bodyColorInput = document.getElementById("body-color");
-// bodyColorInput.addEventListener("input", function () {
-//   bodyMaterial.color.set(this.value);
-// });
-
-// const detailsColorInput = document.getElementById("details-color");
-// detailsColorInput.addEventListener("input", function () {
-//   detailsMaterial.color.set(this.value);
-// });
-
-// const glassColorInput = document.getElementById("glass-color");
-// glassColorInput.addEventListener("input", function () {
-//   glassMaterial.color.set(this.value);
-// });
-
-// Car
-
-// const shadow = new THREE.TextureLoader().load("gltf/ferrari_ao.png");
-
-/**
- * Animate
- */
 console.log(camera.position);
 let loader = new GLTFLoader();
 let myRobot;
@@ -214,17 +194,15 @@ let test;
 let newTest;
 let wheels = [];
 let cameraPos = { x: 0, y: 0 };
-// const dracoLoader = new DRACOLoader();
-// dracoLoader.setDecoderPath("draco/gltf/");
-// loader.setDRACOLoader(dracoLoader);
 
 loader.load("gltf/parent.gltf", (gltf) => {
   myRobot = gltf.scene.children[0];
+  myRobot.scale.set(0.5, 0.5, 0.5);
   myRobotTop = myRobot.getObjectByName("node_id6");
   myRobotTopGun = myRobotTop.getObjectByName("node_id8");
 
   myRobotDown = myRobot.getObjectByName("node_id57");
-
+  myRobot.position.y -= 0.5;
   wheels.push(
     myRobotDown.getObjectByName("node_id197").getObjectByName("node_id214"),
 
@@ -232,23 +210,6 @@ loader.load("gltf/parent.gltf", (gltf) => {
     myRobotDown.getObjectByName("node_id62"),
     myRobotDown.getObjectByName("node_id244")
   );
-  // myCar.getObjectByName("rim_fl").material = detailsMaterial;
-  // myCar.getObjectByName("rim_fr").material = detailsMaterial;
-  // myCar.getObjectByName("rim_rr").material = detailsMaterial;
-  // myCar.getObjectByName("rim_rl").material = detailsMaterial;
-  // myCar.getObjectByName("trim").material = detailsMaterial;
-  // wheels.push(
-  //   myCar.getObjectByName("Cylinder007"),
-  //   myCar.getObjectByName("Cylinder011"),
-  //   myCar.getObjectByName("Cylinder013"),
-  //   myCar.getObjectByName("Plane036").getObjectByName("Cylinder012")
-  // );
-  // myCar.getObjectByName("glass").material = glassMaterial;
-  // console.log(wheels);
-  // myCar.scale.set(0.01, 0.01, 0.01);
-  //   myCar.position.x = 0;
-
-  //   myCar.position.z = 0;
 
   scene.add(gltf.scene);
 });
@@ -318,12 +279,6 @@ document.addEventListener(
   false
 );
 
-/*
-
-Fast and Furious: Tunahan and Engin
-
-*/
-
 const domElement = document.createElement("div");
 document.body.append(domElement);
 domElement.style.zIndex = 100;
@@ -347,11 +302,32 @@ miniDom.style.borderRadius = "99px";
 miniDom.style.width = "100px";
 miniDom.style.height = "100px";
 
+const fullscreen = document.getElementsByClassName("fullscreen");
+const minimize = document.getElementsByClassName("minimize");
+
+const cameraScreen = document.getElementsByClassName("camera");
+
+fullscreen[0].onclick = () => {
+  cameraScreen[0].style.height = "100vh";
+  cameraScreen[0].style.bottom = "0px";
+  cameraScreen[0].style.left = "0px";
+
+  cameraScreen[0].style.width = "100vw";
+};
+
+minimize[0].onclick = () => {
+  cameraScreen[0].style.height = "200px";
+  cameraScreen[0].style.width = "300px";
+
+  cameraScreen[0].style.bottom = "10px";
+  cameraScreen[0].style.left = "10px";
+};
+
 const positionDomElement = document.createElement("div");
 document.body.append(domElement);
 positionDomElement.style.zIndex = 100;
 positionDomElement.style.position = "fixed";
-positionDomElement.style.bottom = "60px";
+positionDomElement.style.bottom = "250px";
 positionDomElement.style.left = "60px";
 positionDomElement.style.backgroundColor = "rgba(0,0,0,0.2)";
 positionDomElement.style.borderRadius = "99px";
@@ -412,10 +388,6 @@ const move = (e) => {
   if (e.changedTouches) {
     xDiff = e.changedTouches[0].clientX - dragStart.x;
     yDiff = e.changedTouches[0].clientY - dragStart.y;
-    // if (e.changedTouches[1]) {
-    //   xDiffRotation = e.changedTouches[0].clientX - dragStart2.x;
-    //   yDiffRotation = e.changedTouches[0].clientY - dragStart2.y;
-    // }
   } else {
     xDiff = e.clientX - dragStart.x;
     yDiff = e.clientY - dragStart.y;
@@ -474,7 +446,6 @@ const cameraMouseDownHandler = (e) => {
 };
 
 const mouseUpHandler = (e) => {
-  console.log("Triggered");
   if (dragStart === null) return;
 
   miniDom.style.transition = ".2s";
@@ -526,45 +497,42 @@ let lineCounter = 2;
 let samplingCounter = 0;
 const flag = false;
 
-let degree = null;
+let degree = { linearX: 0, angularX: 0, pitch_angle: 0, yaw_angle: 0 };
 let tempDegree = null;
-
 setInterval(() => {
   tempDegree = getGamepadState();
-}, 10);
+}, 100);
 function animate() {
-  // for (let i = 0; i < wheels.length; i++) {
-  //   console.log(wheels[i].rotation);
-  // }
-  //   if (myCar) myCar.position.x += 1;
-  // if (myCar) myCar.rotation.z += 0.01;
-  //   myCar.position.z += 1;
-  // camera.position.z += 1;
-  // if (top) top.rotation.y += 0.01;
-  // if (down) down.rotation.y += 0.01;
-  // if (down) down.rotation.y += 0.01;
+  if (
+    myRobotTopGun &&
+    degree.pitch_angle !== undefined &&
+    degree.yaw_angle !== undefined
+  ) {
+    console.log(myRobotTopGun.rotation.y);
+    myRobotTop.rotation.y += degree.pitch_angle / 100;
 
-  // if (myRobot) {
-  //   myRobot.position.x += currentPos.x / 1000;
-  //   myRobot.position.z += currentPos.y / 1000;
-  //   camera.position.x += currentPos.x / 1000;
-  //   camera.position.z += currentPos.y / 1000;
-  // }
-
-  if (degree !== tempDegree && tempDegree !== undefined) {
-    console.log(tempDegree);
-    degree = tempDegree;
-    if (myRobot) {
-      myRobot.position.z +=
-        (-1 * degree?.linearX * (1 - -1 * myRobot.rotation.y)) / 50;
-      if (myRobot.rotation.y < 6 && myRobot.rotation.y > -6)
-        myRobot.rotation.y += degree?.angularX / 50;
-      else myRobot.rotation.y = 0;
-      myRobot.position.x += (degree?.linearX * -1 * myRobot.rotation.y) / 50;
-    }
+    myRobotTopGun.rotation.x += degree.yaw_angle / 100;
   }
-  let alpha = 0;
+  if (tempDegree !== null && tempDegree !== undefined) {
+    degree = tempDegree;
 
+    // if (myRobot) {
+    //   myRobot.position.z +=
+    //     (-1 * degree?.linearX * (1 - -1 * myRobot.rotation.y)) / 50;
+    //   if (myRobot.rotation.y < 6 && myRobot.rotation.y > -6)
+    //     myRobot.rotation.y += degree?.angularX / 50;
+    //   else myRobot.rotation.y = 0;
+    //   myRobot.position.x += (degree?.linearX * -1 * myRobot.rotation.y) / 50;
+    // }
+  } else {
+    degree.linearX = 0;
+    degree.angularX = 0;
+  }
+  cameraPos.x = -1 * degree?.angularX * 100;
+
+  currentPos.y = -1 * degree?.linearX * 100;
+  let alpha = 0;
+  // console.log(controls);
   // controls.update();
   if (myRobot) {
     if (currentPos.y < 50) {
@@ -573,43 +541,21 @@ function animate() {
       myRobot.rotation.y += cameraPos.x / 10000;
     }
 
-    // myCar.rotation.z += cameraPos.x - 50 / 10000;
-
-    // myCar.position.x += currentPos.x / 800;
-    // console.log(myCar.rotation.z);
-    // console.log(Math.sin(-1.52582));
-    // myCar.position.z -= currentPos.y / 800;
-
-    // console.log(myCar.rotation.z);
     alpha = myRobot.rotation.y;
     let condition = (myRobot.rotation.y * 180) / Math.PI;
-    // console.log((myRobot.rotation.y * 180) / Math.PI);
-    // console.log(condition, "condition data");
+
     if (condition < 0) condition = 360 + condition;
 
-    if (condition < 90 || (condition < 360 && condition > 270)) {
-      myRobot.position.z += (Math.cos(alpha) * currentPos.y) / 800;
-      myRobot.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-      camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-      camera.position.z += (Math.cos(alpha) * currentPos.y) / 800;
-    } else if (condition > 90 && condition < 270) {
-      myRobot.position.z += (Math.cos(alpha) * currentPos.y) / 800;
-
-      myRobot.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-      camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-      camera.position.z += (Math.cos(alpha) * currentPos.y) / 800;
-    }
-    // console.log(myCar.rotation.z);
+    myRobot.position.z += (Math.cos(alpha) * currentPos.y) / 800;
+    myRobot.position.x += (Math.sin(alpha) * currentPos.y) / 800;
+    camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
+    camera.position.z += (Math.cos(alpha) * currentPos.y) / 800;
   }
 
-  // grid.position.x += currentPos.x / 800;
-  // grid.position.z += currentPos.y / 800;
   for (let i = 0; i < wheels.length; i++) {
     wheels[i].rotation.x += currentPos.y / 800;
+    wheels[i].rotation.x += cameraPos.x / 800;
   }
-  let x = 0;
-  let y = 0;
-  let z = 0;
 
   if (positions)
     positions[lineCounter * 3 - 1] += (Math.cos(alpha) * currentPos.y) / 800;
@@ -629,36 +575,8 @@ function animate() {
 
   line.geometry.attributes.position.needsUpdate = true; // required after the first render
 
-  //   camera.position.x += 0.01;
-  //   camera.rotation.y += 0.01;
-  //   camera.rotation.z += 0.01;
-
-  //   console.log(camera.position);
-  //   myCar.position.x += 1;
-
   requestAnimationFrame(animate);
-  //   car.position.x += 0.1;
 
   renderer.render(scene, camera);
 }
 animate();
-
-// const clock = new THREE.Clock();
-
-// const tick = () => {
-//   const elapsedTime = clock.getElapsedTime();
-
-//   // Update objects
-//   sphere.rotation.y = 0.5 * elapsedTime;
-
-//   // Update Orbital Controls
-//   // controls.update()
-
-//   // Render
-//   renderer.render(scene, camera);
-
-//   // Call tick again on the next frame
-//   window.requestAnimationFrame(tick);
-// };
-
-// tick();

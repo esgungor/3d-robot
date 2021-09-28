@@ -39,10 +39,39 @@ body {
   left: 10px;
 }
 
+button {
+  color: #000;
+  background-color: #fff;
+  border: none;
+  box-shadow: none;
+  border-radius: 5px;
+
+  padding: 10px 20px;
+}
+
+button:hover {
+  color: #000;
+  background-color: #e8e8e8;
+  border: none;
+  padding: 10px 20px;
+}
+
+button:active {
+  color: #000;
+  background-color: #d8d8d8;
+  border: none;
+  padding: 10px 20px;
+}
 .camera {
+  position: absolute;
+  z-index: 10000;
+  bottom: 10px;
+  left: 10px;
   background-color: rgba(0, 0, 0, 0.4);
   width: var(--box-width);
   height: var(--box-height);
+  transition: width 0.2s, height 0.4s;
+
   border-radius: 5px;
 }
 .map {
