@@ -32,16 +32,17 @@ export function getGamepadState() {
 
   // Escape if no gamepad was found
   if (!gamepad) {
+    console.log("gamepad disabled");
     return;
   }
-
+  let logs = null;
   // Filter out only the buttons which are pressed
   const pressedButtons = gamepad.buttons
     .map((button, id) => ({ id, button }))
     .filter(isPressed);
 
   //Left
-  if (gamepads[0].axes[0] || gamepads[0].axes[1]) {
+  if (gamepads[0].axes[0] || gamepads[0].axes[1] || stopSpeedChasis == 1) {
     var linearX = round10(gamepads[0].axes[1] * -1, -1);
     var angularX = round10(gamepads[0].axes[0] * -1, -1);
     if (
@@ -51,13 +52,30 @@ export function getGamepadState() {
       angularX < -0.15
     ) {
       console.log(angularX, linearX, stopSpeedChasis);
-      return { angularX, linearX, pitch_angle, yaw_angle };
       stopSpeedChasis = 1;
+
+      return {
+        angularX,
+        linearX,
+        stopSpeedChasis,
+        pitch_angle: 0,
+        yaw_angle: 0,
+        stopSpeedGimbal: 0,
+      };
     } else {
       if (stopSpeedChasis == 1) {
         linearX = 0;
         angularX = 0;
-        console.log("SpeedStop:", angularX, linearX, stopSpeedChasis);
+        logs = {
+          angularX,
+          linearX,
+          stopSpeedChasis,
+          pitch_angle: 0,
+          yaw_angle: 0,
+          stopSpeedGimbal: 0,
+        };
+        stopSpeedChasis = 0;
+        return logs;
       }
     }
   }
@@ -73,16 +91,29 @@ export function getGamepadState() {
       console.log(pitch_angle, yaw_angle, stopSpeedGimbal);
       console.log(pitch_angle, yaw_angle, stopSpeedGimbal);
       stopSpeedGimbal = 1;
+      return {
+        angularX: 0,
+        linearX: 0,
+        stopSpeedChasis: 0,
+        pitch_angle,
+        yaw_angle,
+        stopSpeedGimbal,
+      };
     } else {
       if (stopSpeedGimbal == 1) {
         yaw_angle = 0;
         pitch_angle = 0;
-        console.log("SpeedStop:", pitch_angle, yaw_angle, stopSpeedGimbal);
-        console.log("SpeedStop:", pitch_angle, yaw_angle);
-        stopSpeedGimbal = 0;
+        let data = {
+          angularX: 0,
+          linearX: 0,
+          stopSpeedChasis: 1,
+          pitch_angle,
+          yaw_angle,
+          stopSpeedGimbal,
+        };
+        return data;
       }
     }
-    return { angularX, linearX, pitch_angle, yaw_angle };
   }
 
   // Print the pressed buttons to our HTML

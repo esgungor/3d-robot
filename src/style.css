@@ -16,6 +16,11 @@ body {
   outline: none;
 }
 
+img {
+  height: inherit;
+  width: inherit;
+}
+
 :root {
   --box-width: 300px;
   --box-height: 200px;
@@ -33,7 +38,7 @@ body {
 }
 .view-container {
   position: absolute;
-  display: flex;
+  display: block;
   z-index: 10000;
   bottom: 10px;
   left: 10px;
@@ -47,6 +52,19 @@ button {
   border-radius: 5px;
 
   padding: 10px 20px;
+}
+
+.fullscreen {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+}
+
+.minimize {
+  position: absolute;
+  top: 20px;
+
+  right: 130px;
 }
 
 button:hover {

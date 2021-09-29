@@ -44,7 +44,7 @@ var positions = line.geometry.attributes.position.array;
 console.log(line.geometry.attributes.position);
 
 scene.add(line);
-
+window.addEventListener("resize", onWindowResize);
 // Materials
 const material = new THREE.MeshBasicMaterial();
 material.color = new THREE.Color(0xff0000);
@@ -111,7 +111,12 @@ scene.add(camera);
 // Controls
 // const controls = new OrbitControls(camera, canvas)
 // controls.enableDamping = true
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
 
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
 /**
  * Renderer
  */
@@ -119,8 +124,9 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   antialias: true,
 });
+renderer.setPixelRatio(window.devicePixelRatio);
+
 renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const controls = new OrbitControls(camera, canvas);
 controls.target.set(0, 0, 0);
@@ -409,6 +415,8 @@ const move = (e) => {
 const mouseDownHandler = (e) => {
   console.log("Triggered");
   e.preventDefault();
+  dragStop = false;
+  moveFlag = true;
 
   miniDom.style.transition = ".0s";
   if (e.changedTouches) {
@@ -428,6 +436,9 @@ const mouseDownHandler = (e) => {
 
 const cameraMouseDownHandler = (e) => {
   isCameraMove = true;
+  dragStop = false;
+  moveFlag = true;
+
   e.preventDefault();
   // miniDom2.style.transition = ".0s";
   if (e.changedTouches) {
@@ -444,7 +455,7 @@ const cameraMouseDownHandler = (e) => {
     };
   }
 };
-
+let dragStop = true;
 const mouseUpHandler = (e) => {
   if (dragStart === null) return;
 
@@ -452,6 +463,7 @@ const mouseUpHandler = (e) => {
   miniDom.style.transform = `translate3d(0px, 0px, 0px)`;
 
   dragStart = null;
+  dragStop = true;
   currentPos = { x: 0, y: 0 };
 };
 
@@ -462,6 +474,8 @@ const angleMouseUpHandler = (e) => {
   miniDom2.style.transition = ".2s";
   miniDom2.style.transform = `translate3d(0px, 0px, 0px)`;
   dragStart2 = null;
+  dragStop = true;
+
   cameraPos = { x: 0, y: 0 };
 };
 
@@ -492,45 +506,197 @@ miniDom2.addEventListener("touchend", angleMouseUpHandler);
 
 
 */
+var ros = new ROSLIB.Ros({
+  url: "ws://192.168.50.25:9090",
+});
+
+var img = document.getElementById("test");
+var listener = new ROSLIB.Topic({
+  ros: ros,
+  name: "/robomaster/image",
+  messageType: "sensor_msgs/CompressedImage",
+});
+
+var chassis = new ROSLIB.Topic({
+  ros: ros,
+  name: "/robomaster/chassis",
+  messageType: "geometry_msgs/Twist",
+});
+
+var gimbal = new ROSLIB.Topic({
+  ros: ros,
+  name: "/robomaster/gimbal",
+  messageType: "geometry_msgs/Twist",
+});
+
+var status = new ROSLIB.Topic({
+  ros: ros,
+  name: "/robomaster/operation",
+  messageType: "string",
+});
+let testX = 0;
+// setInterval(() => {
+//   testX -= 5;
+
+//   var test = new ROSLIB.Message({
+//     linear: {
+//       x: 0.0,
+//       y: 0.0,
+//       z: 0.0,
+//     },
+//     angular: {
+//       x: 0.0,
+//       y: 0.0,
+//       z: 0.0,
+//     },
+//   });
+//   gimbal.publish(test);
+//   console.log("hello");
+// }, 1000);
+let chasisMode = false;
+let moveFlag = false;
+setInterval(() => {
+  var chasis = new ROSLIB.Message({
+    linear: {
+      x: (-1 * currentPos.y) / 100,
+      y: 0.0,
+      z: currentPos.x,
+    },
+    angular: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0,
+    },
+  });
+  let gimbalBase = {
+    linear: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0,
+    },
+    angular: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0,
+    },
+  };
+  var gimbalData = new ROSLIB.Message({
+    linear: {
+      x: degree.yaw_angle * 10,
+      y: degree.pitch_angle * 10,
+      z: 0.0,
+    },
+    angular: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0,
+    },
+  });
+  if (!chasisMode) {
+    if (
+      (degree && degree.stopSpeedChasis !== 1,
+      currentPos.y !== 0 || cameraPos.x !== 0)
+    ) {
+      console.log("not sended");
+
+      moveFlag = true;
+      chassis.publish(chasis);
+    } else if (
+      moveFlag &&
+      degree &&
+      (degree.stopSpeedChasis === 1 || dragStop)
+    ) {
+      console.log("not sended20");
+
+      chassis.publish(chasis);
+
+      chasis.linear.x = 0;
+      chasis.linear.z = 0;
+
+      moveFlag = false;
+    }
+  }
+
+  if (chasisMode) {
+    if (
+      (degree && degree.stopSpeedGimbal !== 1,
+      degree.yaw_angle !== 0 || degree.pitch_angle !== 0)
+    ) {
+      console.log("sended");
+      moveFlag = true;
+      console.log(gimbalBase);
+      gimbalBase.linear.x += degree.yaw_angle * 50;
+      gimbalBase.linear.y += degree.pitch_angle * 50;
+
+      gimbal.publish(new ROSLIB.Message(gimbalBase));
+    } else if (moveFlag && degree && degree.stopSpeedGimbal === 1) {
+      gimbalData.linear.x = 0;
+      gimbalData.linear.z = 0;
+      gimbal.publish(gimbalData);
+
+      moveFlag = false;
+    }
+  }
+}, 100);
+
+listener.subscribe(function (message) {
+  img.src = `data:image/jpeg;base64,${message.data}`;
+  //log('Received message on ' + listener.name + ': ' +  Object.keys(message).length)
+  //listener.unsubscribe();
+});
+
 let lineCounter = 2;
 
 let samplingCounter = 0;
 const flag = false;
 
-let degree = { linearX: 0, angularX: 0, pitch_angle: 0, yaw_angle: 0 };
-let tempDegree = null;
+let degree = {
+  linearX: 0,
+  angularX: 0,
+  stopSpeedChasis: 0,
+  pitch_angle: 0,
+  yaw_angle: 0,
+  stopSpeedGimbal: 0,
+};
+let tempDegree = {
+  linearX: 0,
+  angularX: 0,
+  stopSpeedChasis: 0,
+  pitch_angle: 0,
+  yaw_angle: 0,
+  stopSpeedGimbal: 0,
+};
 setInterval(() => {
   tempDegree = getGamepadState();
 }, 100);
 function animate() {
+  // console.log(degree, "gimbal");
+
+  if (tempDegree && tempDegree.linearX !== 0 && tempDegree.angularX !== 0) {
+    degree = tempDegree;
+    cameraPos.x = -1 * degree?.angularX * 100;
+
+    currentPos.y = -1 * degree?.linearX * 100;
+    // }
+  } else if (tempDegree && tempDegree.stopSpeedChasis) {
+    degree.linearX = 0;
+    degree.angularX = 0;
+    cameraPos.x = -1 * degree?.angularX * 100;
+
+    currentPos.y = -1 * degree?.linearX * 100;
+  }
   if (
     myRobotTopGun &&
-    degree.pitch_angle !== undefined &&
-    degree.yaw_angle !== undefined
+    tempDegree &&
+    tempDegree.pitch_angle !== undefined &&
+    tempDegree.yaw_angle !== undefined
   ) {
-    console.log(myRobotTopGun.rotation.y);
+    degree = tempDegree;
     myRobotTop.rotation.y += degree.pitch_angle / 100;
 
     myRobotTopGun.rotation.x += degree.yaw_angle / 100;
   }
-  if (tempDegree !== null && tempDegree !== undefined) {
-    degree = tempDegree;
 
-    // if (myRobot) {
-    //   myRobot.position.z +=
-    //     (-1 * degree?.linearX * (1 - -1 * myRobot.rotation.y)) / 50;
-    //   if (myRobot.rotation.y < 6 && myRobot.rotation.y > -6)
-    //     myRobot.rotation.y += degree?.angularX / 50;
-    //   else myRobot.rotation.y = 0;
-    //   myRobot.position.x += (degree?.linearX * -1 * myRobot.rotation.y) / 50;
-    // }
-  } else {
-    degree.linearX = 0;
-    degree.angularX = 0;
-  }
-  cameraPos.x = -1 * degree?.angularX * 100;
-
-  currentPos.y = -1 * degree?.linearX * 100;
   let alpha = 0;
   // console.log(controls);
   // controls.update();
