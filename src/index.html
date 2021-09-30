@@ -3,7 +3,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <script defer src="/node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
+    <script defer src="/node_modules/@fortawesome/fontawesome-free/css/all.css"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,12 +20,14 @@
 
 
 
+
     </nav>
     <canvas class="webgl"></canvas>
 
     <div id="camera" class="camera">
-        <button class="fullscreen">Fullscreen</button>
-        <button class="minimize">Minimize</button>
+        <span id="fullscreen" class="fullscreen"><i  class="fas fa-expand-alt fa-lg"></i></span>
+
+        <span id="minimize" class="minimize"><i class="fas fa-compress-alt fa-lg"></i></span>
          <img id="test">
 
     

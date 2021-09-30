@@ -106,7 +106,7 @@ export function getGamepadState() {
         let data = {
           angularX: 0,
           linearX: 0,
-          stopSpeedChasis: 1,
+          stopSpeedChasis: 0,
           pitch_angle,
           yaw_angle,
           stopSpeedGimbal,

@@ -34,7 +34,9 @@ var positions = new Float32Array(500 * 3); // 3 vertices per point
 
 lineGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
-const lineMaterial = new THREE.LineDashedMaterial({ color: 0xff0000 });
+const lineMaterial = new THREE.LineDashedMaterial({
+  color: 0xe3e3e4,
+});
 const line = new THREE.Line(lineGeometry, lineMaterial);
 line.geometry.computeBoundingSphere();
 line.frustumCulled = false;
@@ -49,18 +51,9 @@ window.addEventListener("resize", onWindowResize);
 const material = new THREE.MeshBasicMaterial();
 material.color = new THREE.Color(0xff0000);
 
-// Mesh
-// const sphere = new THREE.Mesh(geometry,material)
-// scene.add(sphere)
-
 // Lights
 const hlight = new THREE.AmbientLight(0x404040, 10);
 scene.add(hlight);
-// const pointLight = new THREE.PointLight(0xffffff, 0.1);
-// pointLight.position.x = 2;
-// pointLight.position.y = 3;
-// pointLight.position.z = 4;
-// scene.add(pointLight);
 
 /**
  * Sizes
@@ -96,16 +89,6 @@ camera.position.z = 10;
 camera.position.y = 2.5;
 camera.rotation.x = -(40 / 180) * Math.PI;
 
-// camera.rotation.z = (10 / 180) * Math.PI;
-
-// camera.position.x = 700;
-// camera.position.z = 10;
-// camera.position.x = -8;
-// camera.position.y = -11;
-
-// camera.position.y = -200;
-// camera.position.x = 0;
-// camera.position.y = 0;
 // camera.position.z = 2;
 scene.add(camera);
 // Controls
@@ -133,12 +116,19 @@ controls.target.set(0, 0, 0);
 controls.update();
 
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
-scene.background = new THREE.Color(0xddddd);
-scene.background = new THREE.Color(0xeeeeee);
-scene.environment = pmremGenerator.fromScene(new RoomEnvironment()).texture;
-scene.fog = new THREE.Fog(0xeeeeee, 10, 50);
+// scene.background = new THREE.Color(0xddddd);
+// scene.background = new THREE.Color(0xeeeeee);
 
-const grid = new THREE.GridHelper(100, 40, 0x000000, 0x000000);
+//Old theme given
+// scene.background = new THREE.Color(0x24383f);
+scene.background = new THREE.Color(0x1d2224);
+
+scene.environment = pmremGenerator.fromScene(new RoomEnvironment()).texture;
+// scene.fog = new THREE.Fog(0xeeeeee, 10, 50);
+
+const grid = new THREE.GridHelper(100, 40, 0xffffff, 0xffffff);
+// const grid = new THREE.GridHelper(100, 40, 0x000000, 0x000000);
+
 grid.material.opacity = 0.1;
 grid.material.depthWrite = false;
 grid.material.transparent = true;
@@ -165,27 +155,6 @@ scene.add(directionalLight);
 // light4.position.set(-500, 300, 500);
 // scene.add(light4);
 /* Materials*/
-const bodyMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xff0000,
-  metalness: 0.6,
-  roughness: 0.4,
-  clearcoat: 0.05,
-  clearcoatRoughness: 0.05,
-});
-
-const detailsMaterial = new THREE.MeshStandardMaterial({
-  color: 0xffffff,
-  metalness: 1.0,
-  roughness: 0.5,
-});
-
-const glassMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xffffff,
-  metalness: 0,
-  roughness: 0.1,
-  transmission: 0.9,
-  transparent: true,
-});
 
 console.log(camera.position);
 let loader = new GLTFLoader();
@@ -193,11 +162,7 @@ let myRobot;
 let myRobotTop;
 let myRobotTopGun;
 let myRobotDown;
-
-let robotWheels = [];
-let myCar;
-let test;
-let newTest;
+let isCameraMove;
 let wheels = [];
 let cameraPos = { x: 0, y: 0 };
 
@@ -285,76 +250,82 @@ document.addEventListener(
   false
 );
 
+const colorOuter = "rgba(200, 205, 207, 0.2)";
+const colorInner = "rgba(200, 205, 207, 0.8)";
+
 const domElement = document.createElement("div");
 document.body.append(domElement);
 domElement.style.zIndex = 100;
 domElement.style.position = "fixed";
 domElement.style.bottom = "60px";
 domElement.style.right = "60px";
-domElement.style.backgroundColor = "rgba(0,0,0,0.2)";
+domElement.style.backgroundColor = colorOuter;
 domElement.style.borderRadius = "99px";
-domElement.style.width = "200px";
-domElement.style.height = "200px";
+domElement.style.width = "150px";
+domElement.style.height = "150px";
 
 const miniDom = document.createElement("div");
 document.body.append(domElement);
 miniDom.style.zIndex = 1000;
 miniDom.style.position = "relative";
-miniDom.style.top = "25%";
+miniDom.style.top = "24%";
 miniDom.style.translate = "translateY(-50%)";
 miniDom.style.margin = "auto";
-miniDom.style.backgroundColor = "rgba(0,0,0,0.6)";
+miniDom.style.backgroundColor = colorInner;
 miniDom.style.borderRadius = "99px";
-miniDom.style.width = "100px";
-miniDom.style.height = "100px";
+miniDom.style.width = "80px";
+miniDom.style.height = "80px";
 
-const fullscreen = document.getElementsByClassName("fullscreen");
-const minimize = document.getElementsByClassName("minimize");
+const fullscreen = document.getElementById("fullscreen");
+const minimize = document.getElementById("minimize");
 
 const cameraScreen = document.getElementsByClassName("camera");
 
-fullscreen[0].onclick = () => {
+fullscreen.onclick = () => {
   cameraScreen[0].style.height = "100vh";
   cameraScreen[0].style.bottom = "0px";
   cameraScreen[0].style.left = "0px";
 
   cameraScreen[0].style.width = "100vw";
+  fullscreen.style.display = "none";
+  minimize.style.display = "block";
 };
 
-minimize[0].onclick = () => {
+minimize.onclick = () => {
   cameraScreen[0].style.height = "200px";
   cameraScreen[0].style.width = "300px";
 
   cameraScreen[0].style.bottom = "10px";
   cameraScreen[0].style.left = "10px";
+  fullscreen.style.display = "block";
+  minimize.style.display = "none";
 };
 
 const positionDomElement = document.createElement("div");
 document.body.append(domElement);
 positionDomElement.style.zIndex = 100;
 positionDomElement.style.position = "fixed";
-positionDomElement.style.bottom = "250px";
+positionDomElement.style.bottom = "60px";
 positionDomElement.style.left = "60px";
-positionDomElement.style.backgroundColor = "rgba(0,0,0,0.2)";
+positionDomElement.style.backgroundColor = colorOuter;
 positionDomElement.style.borderRadius = "99px";
-positionDomElement.style.width = "200px";
-positionDomElement.style.height = "200px";
+positionDomElement.style.width = "150px";
+positionDomElement.style.height = "150px";
 
 const miniDom2 = document.createElement("div");
 document.body.append(positionDomElement);
 miniDom2.style.zIndex = 100000;
 miniDom2.style.position = "relative";
-miniDom2.style.top = "25%";
+miniDom2.style.top = "24%";
 miniDom2.style.translate = "translateY(-50%)";
 miniDom2.style.margin = "auto";
-miniDom2.style.backgroundColor = "rgba(0,0,0,0.6)";
+miniDom2.style.backgroundColor = colorInner;
 miniDom2.style.borderRadius = "99px";
-miniDom2.style.width = "100px";
-miniDom2.style.height = "100px";
+miniDom2.style.width = "80px";
+miniDom2.style.height = "80px";
 
 domElement.appendChild(miniDom);
 positionDomElement.appendChild(miniDom2);
-let isCameraMove = false;
 
 const angleMove = (e) => {
   let xDiff = 0;
@@ -553,17 +524,16 @@ let testX = 0;
 //   gimbal.publish(test);
 //   console.log("hello");
 // }, 1000);
-let chasisMode = false;
 let moveFlag = false;
 setInterval(() => {
   var chasis = new ROSLIB.Message({
     linear: {
-      x: (-1 * currentPos.y) / 100,
+      x: (-1 * currentPos.y) / 200,
       y: 0.0,
-      z: currentPos.x,
+      z: 0.0,
     },
     angular: {
-      x: 0.0,
+      x: cameraPos.x / 2,
       y: 0.0,
       z: 0.0,
     },
@@ -583,61 +553,57 @@ setInterval(() => {
   var gimbalData = new ROSLIB.Message({
     linear: {
       x: degree.yaw_angle * 10,
-      y: degree.pitch_angle * 10,
+      y: 0.0,
       z: 0.0,
     },
     angular: {
-      x: 0.0,
+      x: degree.pitch_angle * 10,
       y: 0.0,
       z: 0.0,
     },
   });
-  if (!chasisMode) {
-    if (
-      (degree && degree.stopSpeedChasis !== 1,
-      currentPos.y !== 0 || cameraPos.x !== 0)
-    ) {
-      console.log("not sended");
+  if (
+    (degree && degree.stopSpeedChasis !== 1,
+    currentPos.y !== 0 ||
+      (cameraPos.x !== 0 && (degree.angularX !== 0 || degree.linearX !== 0)))
+  ) {
+    console.log(cameraPos.x);
 
-      moveFlag = true;
-      chassis.publish(chasis);
-    } else if (
-      moveFlag &&
-      degree &&
-      (degree.stopSpeedChasis === 1 || dragStop)
-    ) {
-      console.log("not sended20");
+    moveFlag = true;
+    chassis.publish(chasis);
+  } else if (moveFlag && degree && degree.stopSpeedChasis === 1) {
+    console.log("stop moving");
+    console.log(degree.stopSpeedChasis);
+    degree.stopSpeedChasis = 0;
+    chasis.linear.x = 0;
+    chasis.angular.x = 0;
 
-      chassis.publish(chasis);
+    chassis.publish(chasis);
 
-      chasis.linear.x = 0;
-      chasis.linear.z = 0;
-
-      moveFlag = false;
-    }
+    moveFlag = false;
   }
 
-  if (chasisMode) {
-    if (
-      (degree && degree.stopSpeedGimbal !== 1,
-      degree.yaw_angle !== 0 || degree.pitch_angle !== 0)
-    ) {
-      console.log("sended");
-      moveFlag = true;
-      console.log(gimbalBase);
-      gimbalBase.linear.x += degree.yaw_angle * 50;
-      gimbalBase.linear.y += degree.pitch_angle * 50;
+  if (
+    (degree && degree.stopSpeedGimbal !== 1,
+    degree.yaw_angle !== 0 || degree.pitch_angle !== 0)
+  ) {
+    console.log("gimbal");
+    moveFlag = true;
+    console.log(degree);
+    gimbalBase.linear.x += degree.yaw_angle * 50;
+    gimbalBase.angular.x += degree.pitch_angle * 50;
 
-      gimbal.publish(new ROSLIB.Message(gimbalBase));
-    } else if (moveFlag && degree && degree.stopSpeedGimbal === 1) {
-      gimbalData.linear.x = 0;
-      gimbalData.linear.z = 0;
-      gimbal.publish(gimbalData);
+    gimbal.publish(new ROSLIB.Message(gimbalBase));
+  } else if (moveFlag && degree && degree.stopSpeedGimbal === 1) {
+    console.log("stop gimbal");
 
-      moveFlag = false;
-    }
+    gimbalData.linear.x = 0;
+    gimbalData.angular.x = 0;
+    gimbal.publish(gimbalData);
+
+    moveFlag = false;
   }
-}, 100);
+}, 200);
 
 listener.subscribe(function (message) {
   img.src = `data:image/jpeg;base64,${message.data}`;
@@ -648,7 +614,6 @@ listener.subscribe(function (message) {
 let lineCounter = 2;
 
 let samplingCounter = 0;
-const flag = false;
 
 let degree = {
   linearX: 0,
@@ -670,8 +635,6 @@ setInterval(() => {
   tempDegree = getGamepadState();
 }, 100);
 function animate() {
-  // console.log(degree, "gimbal");
-
   if (tempDegree && tempDegree.linearX !== 0 && tempDegree.angularX !== 0) {
     degree = tempDegree;
     cameraPos.x = -1 * degree?.angularX * 100;

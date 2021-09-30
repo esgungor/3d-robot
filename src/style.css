@@ -24,15 +24,18 @@ img {
 :root {
   --box-width: 300px;
   --box-height: 200px;
+  --color-outer: rgba(63, 43, 36, 0.2);
+  --color-inner: rgba(63, 43, 36, 0.8);
 }
 .projectBar {
   position: fixed;
   display: flex;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(36, 56, 63, 0.8);
   color: white;
-  width: 100%;
+  border-radius: 8px;
+  width: 100vw;
   z-index: 10000;
-  padding: 10px;
+  padding: 10px 10px;
   text-align: center;
   justify-content: space-around;
 }
@@ -40,52 +43,44 @@ img {
   position: absolute;
   display: block;
   z-index: 10000;
-  bottom: 10px;
-  left: 10px;
-}
-
-button {
-  color: #000;
-  background-color: #fff;
-  border: none;
-  box-shadow: none;
-  border-radius: 5px;
-
-  padding: 10px 20px;
+  right: 0;
+  left: 0;
+  bottom: 60;
 }
 
 .fullscreen {
   position: absolute;
-  top: 20px;
+  top: 10px;
   right: 10px;
+  color: #fff;
 }
 
 .minimize {
   position: absolute;
-  top: 20px;
-
-  right: 130px;
+  top: 10px;
+  color: #fff;
+  display: none;
+  right: 10px;
 }
 
-button:hover {
-  color: #000;
-  background-color: #e8e8e8;
-  border: none;
-  padding: 10px 20px;
+span:hover {
+  color: #c8cdcf;
 }
 
-button:active {
-  color: #000;
-  background-color: #d8d8d8;
-  border: none;
-  padding: 10px 20px;
+.menu-item {
+  font-size: 13px;
+  font-weight: 800;
 }
+
 .camera {
   position: absolute;
   z-index: 10000;
-  bottom: 10px;
-  left: 10px;
-  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 40px;
+  margin: auto;
+  right: 0;
+  left: 0;
+  background-color: var(--color-outer);
+  border: none;
   width: var(--box-width);
   height: var(--box-height);
   transition: width 0.2s, height 0.4s;
