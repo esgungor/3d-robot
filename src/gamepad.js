@@ -51,7 +51,7 @@ export function getGamepadState() {
       angularX > 0.15 ||
       angularX < -0.15
     ) {
-      console.log(angularX, linearX, stopSpeedChasis);
+      // console.log(angularX, linearX, stopSpeedChasis);
       stopSpeedChasis = 1;
 
       return {
@@ -88,8 +88,7 @@ export function getGamepadState() {
       pitch_angle > 0.15 ||
       pitch_angle < -0.15
     ) {
-      console.log(pitch_angle, yaw_angle, stopSpeedGimbal);
-      console.log(pitch_angle, yaw_angle, stopSpeedGimbal);
+      // console.log(pitch_angle, yaw_angle, stopSpeedGimbal);
       stopSpeedGimbal = 1;
       return {
         angularX: 0,
@@ -113,6 +112,10 @@ export function getGamepadState() {
         };
         return data;
       }
+    }
+    for (const button of pressedButtons) {
+      console.log(button);
+      console.log(`Button ${button.id} was pressed.`);
     }
   }
 

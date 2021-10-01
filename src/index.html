@@ -4,6 +4,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script defer src="/node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
+
+
     <script defer src="/node_modules/@fortawesome/fontawesome-free/css/all.css"></script>
 <head>
     <meta charset="UTF-8">
@@ -11,14 +13,13 @@
     <title>Teleoperation Center</title>
 </head>
 <body>
+    
     <nav class="projectBar">
         <span class="menu-item">Robot ID</span>
         <span class="menu-item">Battery</span>
         <span class="menu-item">Status</span>
         <span class="menu-item">Log</span>
         <span class="menu-item">PS4 </span>
-
-
 
 
     </nav>
@@ -32,11 +33,34 @@
 
     
     </div>
-    <div class="view-container">
-<!-- <div id="map" class="map"></div> -->
 
+<!-- <button type="button" class="btn btn-primary" id="myBtn">Show live toast</button>
 
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Bootstrap</strong>
+            <small>11 mins ago</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Hello, world! This is a toast message.
+        </div>
     </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var btn = document.getElementById("myBtn");
+        var element = document.getElementById("liveToast");
+
+        // Create toast instance
+        var myToast = new bootstrap.Toast(element);
+
+        btn.addEventListener("click", function () {
+            element.style.display = "block";
+        });
+    });
+</script> -->
     <script src="map.js"></script>
     <script src="http://static.robotwebtools.org/roslibjs/current/roslib.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4CZPzMFcExCkLdnl6lkfQ8D1TlXc92NE&callback=initMap&libraries=&v=weekly"

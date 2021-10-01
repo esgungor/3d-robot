@@ -1,5 +1,3 @@
-import "./style.css";
-
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -8,6 +6,8 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import * as dat from "dat.gui";
 import dom from "dat.gui/src/dat/dom/dom";
 import { getGamepadState } from "./gamepad";
+import "./style.scss";
+import "./custom.scss";
 
 //Map
 
@@ -255,7 +255,7 @@ const colorInner = "rgba(200, 205, 207, 0.8)";
 
 const domElement = document.createElement("div");
 document.body.append(domElement);
-domElement.style.zIndex = 100;
+domElement.style.zIndex = 1000000;
 domElement.style.position = "fixed";
 domElement.style.bottom = "60px";
 domElement.style.right = "60px";
@@ -303,7 +303,7 @@ minimize.onclick = () => {
 
 const positionDomElement = document.createElement("div");
 document.body.append(domElement);
-positionDomElement.style.zIndex = 100;
+positionDomElement.style.zIndex = 10000000;
 positionDomElement.style.position = "fixed";
 positionDomElement.style.bottom = "60px";
 positionDomElement.style.left = "60px";
@@ -533,7 +533,7 @@ setInterval(() => {
       z: 0.0,
     },
     angular: {
-      x: cameraPos.x / 2,
+      x: (-1 * cameraPos.x) / 2,
       y: 0.0,
       z: 0.0,
     },
@@ -603,7 +603,55 @@ setInterval(() => {
 
     moveFlag = false;
   }
-}, 200);
+}, 100);
+
+setInterval(() => {
+  let gimbalBase = {
+    linear: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0,
+    },
+    angular: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0,
+    },
+  };
+  var gimbalData = new ROSLIB.Message({
+    linear: {
+      x: degree.yaw_angle * 10,
+      y: 0.0,
+      z: 0.0,
+    },
+    angular: {
+      x: degree.pitch_angle * 10,
+      y: 0.0,
+      z: 0.0,
+    },
+  });
+
+  if (
+    (degree && degree.stopSpeedGimbal !== 1,
+    degree.yaw_angle !== 0 || degree.pitch_angle !== 0)
+  ) {
+    console.log("gimbal");
+    moveFlag = true;
+    console.log(degree);
+    gimbalBase.linear.x += degree.yaw_angle * 50;
+    gimbalBase.angular.x += degree.pitch_angle * 50;
+
+    gimbal.publish(new ROSLIB.Message(gimbalBase));
+  } else if (moveFlag && degree && degree.stopSpeedGimbal === 1) {
+    console.log("stop gimbal");
+
+    gimbalData.linear.x = 0;
+    gimbalData.angular.x = 0;
+    gimbal.publish(gimbalData);
+
+    moveFlag = false;
+  }
+}, 100);
 
 listener.subscribe(function (message) {
   img.src = `data:image/jpeg;base64,${message.data}`;
