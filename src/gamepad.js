@@ -21,6 +21,14 @@ function decimalAdjust(type, value, exp) {
   return +(value[0] + "e" + (value[1] ? +value[1] + exp : exp));
 }
 
+const logs = {
+  angularX: 0,
+  linearX: 0,
+  stopSpeedChasis: 0,
+  pitch_angle: 0,
+  yaw_angle: 0,
+  stopSpeedGimbal: 0,
+};
 const round10 = (value, exp) => decimalAdjust("round", value, exp);
 
 export function getGamepadState() {
@@ -35,14 +43,13 @@ export function getGamepadState() {
     console.log("gamepad disabled");
     return;
   }
-  let logs = null;
   // Filter out only the buttons which are pressed
   const pressedButtons = gamepad.buttons
     .map((button, id) => ({ id, button }))
     .filter(isPressed);
 
   //Left
-  if (gamepads[0].axes[0] || gamepads[0].axes[1] || stopSpeedChasis == 1) {
+  if (gamepads[0].axes[0] || gamepads[0].axes[1]) {
     var linearX = round10(gamepads[0].axes[1] * -1, -1);
     var angularX = round10(gamepads[0].axes[0] * -1, -1);
     if (
@@ -51,31 +58,18 @@ export function getGamepadState() {
       angularX > 0.15 ||
       angularX < -0.15
     ) {
-      // console.log(angularX, linearX, stopSpeedChasis);
       stopSpeedChasis = 1;
-
-      return {
-        angularX,
-        linearX,
-        stopSpeedChasis,
-        pitch_angle: 0,
-        yaw_angle: 0,
-        stopSpeedGimbal: 0,
-      };
+      logs.angularX = angularX;
+      logs.linearX = linearX;
     } else {
-      if (stopSpeedChasis == 1) {
+      if (stopSpeedChasis === 1) {
         linearX = 0;
         angularX = 0;
-        logs = {
-          angularX,
-          linearX,
-          stopSpeedChasis,
-          pitch_angle: 0,
-          yaw_angle: 0,
-          stopSpeedGimbal: 0,
-        };
         stopSpeedChasis = 0;
-        return logs;
+
+        logs.angularX = angularX;
+        logs.linearX = linearX;
+        logs.stopSpeedChasis = 1;
       }
     }
   }
@@ -90,27 +84,17 @@ export function getGamepadState() {
     ) {
       // console.log(pitch_angle, yaw_angle, stopSpeedGimbal);
       stopSpeedGimbal = 1;
-      return {
-        angularX: 0,
-        linearX: 0,
-        stopSpeedChasis: 0,
-        pitch_angle,
-        yaw_angle,
-        stopSpeedGimbal,
-      };
+      logs.pitch_angle = pitch_angle;
+      logs.yaw_angle = yaw_angle;
     } else {
-      if (stopSpeedGimbal == 1) {
+      if (stopSpeedGimbal === 1) {
         yaw_angle = 0;
         pitch_angle = 0;
-        let data = {
-          angularX: 0,
-          linearX: 0,
-          stopSpeedChasis: 0,
-          pitch_angle,
-          yaw_angle,
-          stopSpeedGimbal,
-        };
-        return data;
+        logs.pitch_angle = pitch_angle;
+        logs.yaw_angle = yaw_angle;
+        stopSpeedGimbal = 0;
+
+        logs.stopSpeedGimbal = 1;
       }
     }
     for (const button of pressedButtons) {
@@ -118,6 +102,7 @@ export function getGamepadState() {
       console.log(`Button ${button.id} was pressed.`);
     }
   }
+  return logs;
 
   // Print the pressed buttons to our HTML
 }
