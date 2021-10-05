@@ -8,6 +8,10 @@ import dom from "dat.gui/src/dat/dom/dom";
 import { getGamepadState } from "./gamepad";
 import "./style.scss";
 import "./custom.scss";
+// import "@popperjs/core/dist/umd/popper.min.js";
+
+import "bootstrap/js/dist/collapse";
+
 import RoboController from "./ros";
 
 //Map

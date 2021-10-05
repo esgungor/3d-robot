@@ -24,6 +24,9 @@ img {
 :root {
   --box-width: 300px;
   --box-height: 200px;
+  --sidebar-width: 400px;
+  --sidebar-height: calc(100vh - 150px);
+
   --color-outer: rgba(63, 43, 36, 0.2);
   --color-inner: rgba(63, 43, 36, 0.8);
 }
