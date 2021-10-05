@@ -5,7 +5,7 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import * as dat from "dat.gui";
 import dom from "dat.gui/src/dat/dom/dom";
-import { getGamepadState } from "./gamepad";
+import { getAcc, getGamepadState } from "./gamepad";
 import "./style.scss";
 import "./custom.scss";
 // import "@popperjs/core/dist/umd/popper.min.js";
@@ -163,9 +163,7 @@ let myRobot;
 let myRobotTop;
 let myRobotTopGun;
 let myRobotDown;
-let isCameraMove;
 let wheels = [];
-let cameraPos = { x: 0, y: 0 };
 
 loader.load("gltf/parent.gltf", (gltf) => {
   myRobot = gltf.scene.children[0];
@@ -458,11 +456,12 @@ setInterval(() => {
   degree = getGamepadState();
   if (degree !== undefined || null) {
     if (degree.angularX !== 0 || degree.linearX !== 0) {
-      console.log(degree);
-
       robot.setPositionX(degree.linearX);
       robot.setAngularX(degree.angularX);
       robot.publishPosition(chassis);
+
+      getAcc(degree.linearX, degree.angularX);
+
       degree.angularX = 0;
       degree.linearX = 0;
     }
@@ -473,7 +472,8 @@ setInterval(() => {
       robot.publishGimbal(gimbal);
     }
     if (degree.stopSpeedChasis === 1) {
-      console.log("move stop");
+      getAcc(degree.linearX, degree.angularX);
+
       robot.stopMove(chassis);
       degree.stopSpeedChasis = 0;
     }
@@ -649,6 +649,22 @@ function animate() {
     for (let i = 0; i < wheels.length; i++) {
       wheels[i].rotation.x += robot.positionAngularX / 10;
       wheels[i].rotation.x += robot.positionX / 10;
+    }
+    if (positions)
+      positions[lineCounter * 3 - 1] +=
+        (Math.cos(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
+    if (positions)
+      positions[lineCounter * 3 - 3] +=
+        (Math.sin(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
+    if (robot.angularX !== 0) samplingCounter++;
+    if (robot.angularX !== 0 && samplingCounter === 30) {
+      lineGeometry.setDrawRange(0, lineCounter + 1);
+      lineCounter += 1;
+
+      positions[lineCounter * 3 - 1] += positions[lineCounter * 3 - 1 - 3];
+      positions[lineCounter * 3 - 3] += positions[lineCounter * 3 - 3 - 3];
+
+      samplingCounter = 0;
     }
   }
   // if (tempDegree && tempDegree.linearX !== 0 && tempDegree.angularX !== 0) {

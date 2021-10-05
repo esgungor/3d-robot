@@ -71,7 +71,6 @@ class RoboController {
       },
     });
     rostopic.publish(empty);
-    console.log(empty, "stopped");
   };
 }
 

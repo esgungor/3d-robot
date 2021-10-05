@@ -2,6 +2,13 @@ const refreshRate = 250;
 var stopSpeedChasis = 0;
 var stopSpeedGimbal = 0;
 
+let xAxis = document.getElementById("x-axis");
+let yAxis = document.getElementById("y-axis");
+export const getAcc = (x, y) => {
+  xAxis.style.width = `${Math.abs(x) * 100}%`;
+  yAxis.style.width = `${Math.abs(y) * 100}%`;
+};
+
 function decimalAdjust(type, value, exp) {
   // If the exp is undefined or zero...
   if (typeof exp === "undefined" || +exp === 0) {
