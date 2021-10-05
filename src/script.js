@@ -13,6 +13,7 @@ import "./custom.scss";
 import "bootstrap/js/dist/collapse";
 
 import RoboController from "./ros";
+import { createEvent } from "./events";
 
 //Map
 
@@ -413,7 +414,11 @@ minimize.onclick = () => {
 */
 
 var ros = new ROSLIB.Ros({
-  url: "ws://192.168.50.25:9090",
+  url: "ws://127.0.0.1:9090",
+});
+
+ros.on("error", () => {
+  createEvent("Connection Error", "ROS Bridge connection has failed.");
 });
 
 var img = document.getElementById("test");
@@ -483,6 +488,7 @@ setInterval(() => {
     }
   }
 }, 100);
+
 // let moveFlag = false;
 // setInterval(() => {
 //   var chasis = new ROSLIB.Message({
@@ -647,8 +653,8 @@ function animate() {
       (Math.sin(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
 
     for (let i = 0; i < wheels.length; i++) {
-      wheels[i].rotation.x += robot.positionAngularX / 10;
-      wheels[i].rotation.x += robot.positionX / 10;
+      wheels[i].rotation.x += Math.abs(robot.positionAngularX / 10);
+      wheels[i].rotation.x += Math.abs(robot.positionX / 10);
     }
     if (positions)
       positions[lineCounter * 3 - 1] +=
@@ -679,17 +685,15 @@ function animate() {
 
   //   currentPos.y = -1 * degree?.linearX * 100;
   // }
-  // if (
-  //   myRobotTopGun &&
-  //   tempDegree &&
-  //   tempDegree.pitch_angle !== undefined &&
-  //   tempDegree.yaw_angle !== undefined
-  // ) {
-  //   degree = tempDegree;
-  //   myRobotTop.rotation.y += degree.pitch_angle / 100;
+  if (myRobotTopGun && degree) {
+    myRobotTop.rotation.y += degree.pitch_angle / 100;
 
-  //   myRobotTopGun.rotation.x += degree.yaw_angle / 100;
-  // }
+    if (
+      (myRobotTopGun.rotation.x < Math.PI / 4 || degree.yaw_angle < 0) &&
+      (myRobotTopGun.rotation.x > Math.PI / -6 || degree.yaw_angle > 0)
+    )
+      myRobotTopGun.rotation.x += degree.yaw_angle / 100;
+  }
 
   // let alpha = 0;
   // if (myRobot) {

@@ -1,141 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script defer src="/node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <script
+    defer
+    src="/node_modules/@fortawesome/fontawesome-free/js/all.js"
+  ></script>
 
-
-
-    <script defer src="/node_modules/@fortawesome/fontawesome-free/css/all.css"></script>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script
+    defer
+    src="/node_modules/@fortawesome/fontawesome-free/css/all.css"
+  ></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Teleoperation Center</title>
-</head>
-<body>
-    
+  </head>
+  <body>
     <nav class="projectBar">
-        <span class="menu-item">Robot ID</span>
-        <span class="menu-item">Battery</span>
-        <span class="menu-item">Status</span>
-        <span class="menu-item">Log</span>
-        <span class="menu-item">PS4 </span>
-
-
+      <span class="menu-item">Robot ID</span>
+      <span class="menu-item">Battery</span>
+      <span class="menu-item">Status</span>
+      <span class="menu-item">Log</span>
+      <span class="menu-item">PS4 </span>
     </nav>
     <canvas class="webgl"></canvas>
-    <div class="sidebar px-4 py-4 ">
-        <div class="sidebar-main text-center">
-            <h4>Teleoperation Center</h4>
-            <span class="text-muted">Operate your robot!</span>
-        </div>
-        
-        <div class="accordion mt-2" id="accordionExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                        aria-expanded="true" aria-controls="collapseOne">
-                        Robot Information
-                    </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                    data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        <div class="info row mb-1">
-                            <div class="col fw-bold">Robot ID </div>
-                            <div class="col text-muted">Robomaster S1</div>
-                        </div>
-                        <div class="info row mb-1">
-                            <div class="col fw-bold">Battery </div>
-                            <div class="col text-muted">Robomaster S1</div>
-                        </div>
-                        <div class="info row">
-                            <div class="col fw-bold">Status</div>
-                            <div class="col text-muted">Robomaster S1</div>
-                        </div>
-                        
+    <div class="sidebar px-4 py-4">
+      <div class="sidebar-main text-center">
+        <h4>Teleoperation Center</h4>
+        <span class="text-muted">Operate your robot!</span>
+      </div>
 
-                    </div>
-                </div>
+      <div class="accordion mt-2" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseOne"
+              aria-expanded="true"
+              aria-controls="collapseOne"
+            >
+              Robot Information
+            </button>
+          </h2>
+          <div
+            id="collapseOne"
+            class="accordion-collapse collapse show"
+            aria-labelledby="headingOne"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              <div class="info row mb-1">
+                <div class="col fw-bold">Robot ID</div>
+                <div class="col text-muted">Robomaster S1</div>
+              </div>
+              <div class="info row mb-1">
+                <div class="col fw-bold">Battery</div>
+                <div class="col text-muted">Robomaster S1</div>
+              </div>
+              <div class="info row">
+                <div class="col fw-bold">Status</div>
+                <div class="col text-muted">Robomaster S1</div>
+              </div>
             </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        Control Settings
-                    </button>
-                </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                    data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        Select your control device from list.
-<div class="dropdown mt-2 text-center">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
-        aria-expanded="false">
-        Gamepad
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-        <li><a class="dropdown-item" href="#">Action</a></li>
-        <li><a class="dropdown-item" href="#">Another action</a></li>
-        <li><a class="dropdown-item" href="#">Something else here</a></li>
-    </ul>
-        
-    <div class="mt-2">
-        <span>Throttle</span>
-<div class="progress ">
-    <div id="x-axis" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="100" aria-valuemin="0"
-        aria-valuemax="100"></div>
-</div>
-    </div>
-
-    <div class="mt-2">
-        <span>Rotation</span>
-        <div class="progress ">
-            <div id="y-axis" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="100" aria-valuemin="0"
-                aria-valuemax="100"></div>
+          </div>
         </div>
-    </div>
-    
-</div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingTwo">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseTwo"
+              aria-expanded="false"
+              aria-controls="collapseTwo"
+            >
+              Control Settings
+            </button>
+          </h2>
+          <div
+            id="collapseTwo"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingTwo"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              Select your control device from list.
+              <div class="dropdown mt-2 text-center">
+                <button
+                  class="btn btn-secondary dropdown-toggle"
+                  type="button"
+                  id="dropdownMenuButton1"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Gamepad
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                  <li>
+                    <a class="dropdown-item" href="#">Virtual Joystick</a>
+                  </li>
+                  <li><a class="dropdown-item" href="#">Keyboard</a></li>
+                </ul>
 
-                    </div>
+                <div class="mt-2">
+                  <span>Throttle</span>
+                  <div class="progress">
+                    <div
+                      id="x-axis"
+                      class="progress-bar"
+                      role="progressbar"
+                      style="width: 0%"
+                      aria-valuenow="100"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
                 </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        Logs
-                    </button>
-                </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                    data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        
-                        <code class="ros-log">Error log</code>
-                    </div>
+
+                <div class="mt-2">
+                  <span>Rotation</span>
+                  <div class="progress">
+                    <div
+                      id="y-axis"
+                      class="progress-bar"
+                      role="progressbar"
+                      style="width: 0%"
+                      aria-valuenow="100"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingThree">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseThree"
+              aria-expanded="false"
+              aria-controls="collapseThree"
+            >
+              Logs
+            </button>
+          </h2>
+          <div
+            id="collapseThree"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingThree"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              <code class="ros-log">Error log</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+          <div class="b-info text-center py-2 text-success"><span class="me-1">
+              %100
+          </span>
+        <i class="fas fa-battery-full fa-lg"></i></div>
     </div>
     <div id="camera" class="camera">
-        <span id="fullscreen" class="fullscreen"><i  class="fas fa-expand-alt fa-lg"></i></span>
+      <span id="fullscreen" class="fullscreen"
+        ><i class="fas fa-expand-alt fa-lg"></i
+      ></span>
 
-        <span id="minimize" class="minimize"><i class="fas fa-compress-alt fa-lg"></i></span>
-         <img id="test">
-
-    
+      <span id="minimize" class="minimize"
+        ><i class="fas fa-compress-alt fa-lg"></i
+      ></span>
+      <img id="test" />
     </div>
 
+  
+<div class="toast-container">
+    <div id="toast" class="toast bg-primary" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-secondary ">
+            <i id="event-type" class="fas fa-exclamation fa-sm me-2"></i>
+            <strong id="toast-title" class="me-auto">Bootstrap</strong>
+            <button type="button" class="btn-close text-primary" aria-label="Close"></button>
+        </div>
+        <div id= "toast-content" class="toast-body bg-primary ">
+            Heads up, toasts will stack automatically
+        </div>
+    </div>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
     <!-- <script src="map.js"></script> -->
     <script src="http://static.robotwebtools.org/roslibjs/current/roslib.js"></script>
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4CZPzMFcExCkLdnl6lkfQ8D1TlXc92NE&callback=initMap&libraries=&v=weekly"
         async></script> -->
-
-</body>
+  </body>
 </html>
