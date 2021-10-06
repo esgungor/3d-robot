@@ -1,15 +1,20 @@
 class RobotStatus {
   robotID = "NO_ID";
   battery = 100;
-  chassis = {
+  position = {
     x: 0,
     y: 0,
     z: 0,
   };
-  constructor(robotID, battery, chassis = { x: 0, y: 0, z: 0 }) {
+  attitude = {
+    x: 0,
+    y: 0,
+    z: 0,
+  };
+  constructor(robotID, battery, position = { x: 0, y: 0, z: 0 }) {
     this.robotID = robotID;
     this.battery = battery;
-    this.chassis = chassis;
+    this.position = position;
   }
   //   setChassis({ x, y, z }) {
   //     this.chassis = { x, y, z };
