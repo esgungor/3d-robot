@@ -14,6 +14,7 @@ import "bootstrap/js/dist/collapse";
 
 import RoboController from "./ros";
 import { createEvent } from "./events";
+import RobotStatus from "./robotStatus";
 
 //Map
 
@@ -606,6 +607,12 @@ setInterval(() => {
 //   }
 // }, 100);
 
+// ONLY FOR TESTING PURPOSES
+const robotData = new RobotStatus();
+robotData.battery = 65;
+robotData.publishBattery("battery-data");
+
+robotData.publishChassis("chassis");
 listener.subscribe(function (message) {
   img.src = `data:image/jpeg;base64,${message.data}`;
 });
