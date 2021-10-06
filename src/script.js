@@ -15,6 +15,14 @@ import "bootstrap/js/dist/collapse";
 import RoboController from "./ros";
 import { createEvent } from "./events";
 import RobotStatus from "./robotStatus";
+import { getTopics } from "./topic";
+import VirtualJoystick, {
+  createJoystick,
+  getJoystickState,
+  mouseDownHandler,
+  mouseUpHandler,
+  move,
+} from "./virtualJoystick";
 
 //Map
 
@@ -185,7 +193,23 @@ loader.load("gltf/parent.gltf", (gltf) => {
 
   scene.add(gltf.scene);
 });
+createJoystick();
+let rightJoystickInner = document.getElementById("right-inner");
 
+rightJoystickInner.addEventListener("mousedown", mouseDownHandler);
+// miniDom2.addEventListener("mousedown", cameraMouseDownHandler);
+
+// miniDom.addEventListener("touchstart", mouseDownHandler);
+
+// miniDom2.addEventListener("touchstart", cameraMouseDownHandler);
+
+let currentPos = { x: 0, y: 0 };
+
+document.addEventListener("mousemove", move);
+// vj.rightJoystickInner.addEventListener("touchmove", move);
+
+document.addEventListener("mouseup", mouseUpHandler);
+// vj.rightJoystickInner.addEventListener("touchend", mouseUpHandler);
 const colorOuter = "rgba(200, 205, 207, 0.2)";
 const colorInner = "rgba(200, 205, 207, 0.8)";
 
@@ -415,37 +439,30 @@ minimize.onclick = () => {
 */
 
 var ros = new ROSLIB.Ros({
-  url: "ws://127.0.0.1:9090",
+  url: "ws://192.168.50.25:9090",
 });
 
 ros.on("error", () => {
   createEvent("Connection Error", "ROS Bridge connection has failed.");
 });
+ros.on("connection", () => {
+  createEvent("Connection Successful", "ROS Bridge connected");
+});
 
 var img = document.getElementById("test");
-var listener = new ROSLIB.Topic({
-  ros: ros,
-  name: "/robomaster/image",
-  messageType: "sensor_msgs/CompressedImage",
-});
 
-var chassis = new ROSLIB.Topic({
-  ros: ros,
-  name: "/robomaster/chassis",
-  messageType: "geometry_msgs/Twist",
-});
-
-var gimbal = new ROSLIB.Topic({
-  ros: ros,
-  name: "/robomaster/gimbal",
-  messageType: "geometry_msgs/Twist",
-});
-
-var status = new ROSLIB.Topic({
-  ros: ros,
-  name: "/robomaster/operation",
-  messageType: "string",
-});
+// ROS Listeners defined in here!!
+let {
+  listener,
+  chassis,
+  gimbal,
+  position,
+  attitude,
+  imu,
+  status,
+  battery,
+  gimbalRead,
+} = getTopics(ros);
 let testX = 0;
 
 let degree = {
@@ -456,10 +473,18 @@ let degree = {
   yaw_angle: 0,
   stopSpeedGimbal: 0,
 };
-
+let chassisNew = new ROSLIB.Topic({
+  ros: ros,
+  name: "/robomaster/chassis",
+  messageType: "geometry_msgs/Twist",
+});
 const robot = new RoboController();
 setInterval(() => {
   degree = getGamepadState();
+  // let joystick = getJoystickState();
+  // console.log(joystick);
+  // degree.linearX = joystick.x / 100;
+  // degree.angularX = joystick.y / 10;
   if (degree !== undefined || null) {
     if (degree.angularX !== 0 || degree.linearX !== 0) {
       robot.setPositionX(degree.linearX);
@@ -612,10 +637,45 @@ const robotData = new RobotStatus();
 robotData.battery = 65;
 robotData.publishBattery("battery-data");
 
-robotData.publishChassis("chassis");
 listener.subscribe(function (message) {
   img.src = `data:image/jpeg;base64,${message.data}`;
 });
+
+robotData.setPositionString("(1.44131, 0.0271, 0.0)");
+robotData.setImuString(
+  "(0.02131, 0.00574, -1.00938, -0.00654, -0.00937, 0.0098)"
+);
+
+robotData.setAttitudeString("(1.0, 1.0, 1.0)");
+robotData.setGimbalStatusString("(15.6, 52.4, 17.3, 52.4)");
+robotData.publishImu("imu");
+imu.subscribe(function (message) {
+  console.log(message.data);
+  robotData.setImuString(message.data);
+  robotData.publishImu("imu");
+});
+attitude.subscribe(function (message) {
+  robotData.setAttitudeString(message.data);
+  robotData.publishAttitude("attitude");
+});
+battery.subscribe(function (message) {
+  robotData.setBattery(message.data);
+  robotData.publishBattery("battery-data");
+});
+position.subscribe(function (message) {
+  robotData.setPositionString(message.data);
+  robotData.publishPosition("position");
+});
+gimbalRead.subscribe(function (message) {
+  robotData.setGimbalStatusString(message.data);
+  robotData.publishGimbalRead("gimbal-angle");
+});
+
+// attitude.subscribe((message) => {
+//   robotData.setPositionString(message);
+//   robotData.publishPosition("chassis");
+// });
+// robotData.publishPosition("chassis");
 
 let lineCounter = 2;
 

@@ -3,6 +3,52 @@ $body-color: #d7e1e2;
 $text-muted: #adb5bd;
 $secondary: #1d2224;
 $primary: rgba(36, 56, 63, 0.8);
+
+.joystick-left-outer {
+  z-index: 10000000;
+  position: fixed;
+  bottom: 60px;
+  left: 60px;
+  background-color: var(--color-outer);
+  border-radius: 99px;
+  width: 150px;
+  height: 150px;
+}
+
+.joystick-left-inner {
+  z-index: 100000;
+  position: "relative";
+  top: "24%";
+  translate: "translateY(-50%)";
+  margin: "auto";
+  background-color: var(--joystick-color-inner);
+  border-radius: "99px";
+  width: "80px";
+  height: "80px";
+}
+
+.joystick-right-outer {
+  z-index: 10000000;
+  position: fixed;
+  bottom: 120px;
+  right: 60px;
+  background-color: var(--joystick-color-outer);
+  border-radius: 99px;
+  width: 150px;
+  height: 150px;
+}
+
+.joystick-right-inner {
+  z-index: 100000;
+  position: relative;
+  top: 24%;
+  translate: translateY(-50%);
+  margin: auto;
+  background-color: var(--joystick-color-inner);
+  border-radius: 99px;
+  width: 80px;
+  height: 80px;
+}
 .sidebar {
   position: relative;
   background-color: rgba(36, 56, 63, 0.8);

@@ -29,7 +29,11 @@ img {
 
   --color-outer: rgba(63, 43, 36, 0.2);
   --color-inner: rgba(238, 232, 230, 0.8);
+
+  --joystick-color-outer: rgba(200, 205, 207, 0.2);
+  --joystick-color-inner: rgba(200, 205, 207, 0.8);
 }
+
 .projectBar {
   position: fixed;
   display: flex;
