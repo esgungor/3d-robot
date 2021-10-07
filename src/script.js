@@ -8,7 +8,6 @@ import dom from "dat.gui/src/dat/dom/dom";
 import { getAcc, getGamepadState } from "./gamepad";
 import "./style.scss";
 import "./custom.scss";
-// import "@popperjs/core/dist/umd/popper.min.js";
 
 import "bootstrap/js/dist/collapse";
 
@@ -141,7 +140,7 @@ scene.environment = pmremGenerator.fromScene(new RoomEnvironment()).texture;
 const grid = new THREE.GridHelper(100, 40, 0xffffff, 0xffffff);
 // const grid = new THREE.GridHelper(100, 40, 0x000000, 0x000000);
 
-grid.material.opacity = 0.1;
+grid.material.opacity = 0.2;
 grid.material.depthWrite = false;
 grid.material.transparent = true;
 scene.add(grid);
@@ -197,29 +196,6 @@ loader.load("gltf/parent.gltf", (gltf) => {
 const colorOuter = "rgba(200, 205, 207, 0.2)";
 const colorInner = "rgba(200, 205, 207, 0.8)";
 
-// const domElement = document.createElement("div");
-// document.body.append(domElement);
-// domElement.style.zIndex = 1000000;
-// domElement.style.position = "fixed";
-// domElement.style.bottom = "60px";
-// domElement.style.right = "60px";
-// domElement.style.backgroundColor = colorOuter;
-// domElement.style.borderRadius = "99px";
-// domElement.style.width = "150px";
-// domElement.style.height = "150px";
-
-// const miniDom = document.createElement("div");
-// document.body.append(domElement);
-// miniDom.style.zIndex = 1000;
-// miniDom.style.position = "relative";
-// miniDom.style.top = "24%";
-// miniDom.style.translate = "translateY(-50%)";
-// miniDom.style.margin = "auto";
-// miniDom.style.backgroundColor = colorInner;
-// miniDom.style.borderRadius = "99px";
-// miniDom.style.width = "80px";
-// miniDom.style.height = "80px";
-
 const fullscreen = document.getElementById("fullscreen");
 const minimize = document.getElementById("minimize");
 
@@ -244,183 +220,6 @@ minimize.onclick = () => {
   fullscreen.style.display = "block";
   minimize.style.display = "none";
 };
-
-// const positionDomElement = document.createElement("div");
-// document.body.append(domElement);
-// positionDomElement.style.zIndex = 10000000;
-// positionDomElement.style.position = "fixed";
-// positionDomElement.style.bottom = "60px";
-// positionDomElement.style.left = "60px";
-// positionDomElement.style.backgroundColor = colorOuter;
-// positionDomElement.style.borderRadius = "99px";
-// positionDomElement.style.width = "150px";
-// positionDomElement.style.height = "150px";
-
-// const miniDom2 = document.createElement("div");
-// document.body.append(positionDomElement);
-// miniDom2.style.zIndex = 100000;
-// miniDom2.style.position = "relative";
-// miniDom2.style.top = "24%";
-// miniDom2.style.translate = "translateY(-50%)";
-// miniDom2.style.margin = "auto";
-// miniDom2.style.backgroundColor = colorInner;
-// miniDom2.style.borderRadius = "99px";
-// miniDom2.style.width = "80px";
-// miniDom2.style.height = "80px";
-
-// domElement.appendChild(miniDom);
-// positionDomElement.appendChild(miniDom2);
-
-// const angleMove = (e) => {
-//   let xDiff = 0;
-//   let yDiff = 0;
-//   if (dragStart2 === null) return;
-
-//   if (e.changedTouches) {
-//     console.log("touchscreen clicked");
-
-//     xDiff = e.changedTouches[0].clientX - dragStart2.x;
-//     yDiff = e.changedTouches[0].clientY - dragStart2.y;
-//   } else {
-//     xDiff = e.clientX - dragStart2.x;
-//     yDiff = e.clientY - dragStart2.y;
-//   }
-//   e.preventDefault();
-
-//   const newAngle = Math.atan2(yDiff, xDiff);
-//   const newDistance = Math.min(maxDiff, Math.hypot(xDiff, yDiff));
-//   const multiX = newDistance * Math.cos(newAngle);
-//   const multiY = newDistance * Math.sin(newAngle);
-//   cameraPos = {
-//     x: multiX,
-//     y: multiY,
-//   };
-//   miniDom2.style.transform = `translate3d(${multiX}px, 0px, 0px)`;
-// };
-
-// const move = (e) => {
-//   if (dragStart === null) return;
-//   e.preventDefault();
-
-//   miniDom.style.transition = ".0s";
-//   let xDiff = 0;
-//   let yDiff = 0;
-
-//   if (e.changedTouches) {
-//     xDiff = e.changedTouches[0].clientX - dragStart.x;
-//     yDiff = e.changedTouches[0].clientY - dragStart.y;
-//   } else {
-//     xDiff = e.clientX - dragStart.x;
-//     yDiff = e.clientY - dragStart.y;
-//   }
-
-//   const angle = Math.atan2(yDiff, xDiff);
-//   const distance = Math.min(maxDiff, Math.hypot(xDiff, yDiff));
-//   const xNew = distance * Math.cos(angle);
-//   const yNew = distance * Math.sin(angle);
-
-//   miniDom.style.transform = `translate3d(${xNew}px, ${yNew}px, 0px)`;
-
-//   currentPos = {
-//     x: xNew,
-//     y: yNew,
-//   };
-// };
-
-// const mouseDownHandler = (e) => {
-//   console.log("Triggered");
-//   e.preventDefault();
-//   dragStop = false;
-//   moveFlag = true;
-
-//   miniDom.style.transition = ".0s";
-//   if (e.changedTouches) {
-//     console.log("touchscreen clicked");
-
-//     dragStart = {
-//       x: e.changedTouches[0].clientX,
-//       y: e.changedTouches[0].clientY,
-//     };
-//   } else {
-//     dragStart = {
-//       x: e.clientX,
-//       y: e.clientY,
-//     };
-//   }
-// };
-
-// const cameraMouseDownHandler = (e) => {
-//   isCameraMove = true;
-//   dragStop = false;
-//   moveFlag = true;
-
-//   e.preventDefault();
-//   // miniDom2.style.transition = ".0s";
-//   if (e.changedTouches) {
-//     console.log("touchscreen clicked");
-
-//     dragStart2 = {
-//       x: e.changedTouches[0].clientX,
-//       y: e.changedTouches[0].clientY,
-//     };
-//   } else {
-//     dragStart2 = {
-//       x: e.clientX,
-//       y: e.clientY,
-//     };
-//   }
-// };
-// let dragStop = true;
-// const mouseUpHandler = (e) => {
-//   if (dragStart === null) return;
-
-//   miniDom.style.transition = ".2s";
-//   miniDom.style.transform = `translate3d(0px, 0px, 0px)`;
-
-//   dragStart = null;
-//   dragStop = true;
-//   currentPos = { x: 0, y: 0 };
-// };
-
-// const angleMouseUpHandler = (e) => {
-//   e.preventDefault();
-
-//   if (dragStart2 === null) return;
-//   miniDom2.style.transition = ".2s";
-//   miniDom2.style.transform = `translate3d(0px, 0px, 0px)`;
-//   dragStart2 = null;
-//   dragStop = true;
-
-//   cameraPos = { x: 0, y: 0 };
-// };
-
-// // miniDom.style.transform = "translate (-50%,-50%)";
-// let dragStart = null;
-// let dragStart2 = null;
-
-// miniDom.addEventListener("mousedown", mouseDownHandler);
-// miniDom2.addEventListener("mousedown", cameraMouseDownHandler);
-
-// miniDom.addEventListener("touchstart", mouseDownHandler);
-
-// miniDom2.addEventListener("touchstart", cameraMouseDownHandler);
-
-// let currentPos = { x: 0, y: 0 };
-
-// document.addEventListener("mousemove", move);
-// miniDom.addEventListener("touchmove", move);
-// document.addEventListener("mousemove", angleMove);
-// miniDom2.addEventListener("touchmove", angleMove);
-
-// document.addEventListener("mouseup", mouseUpHandler);
-// miniDom.addEventListener("touchend", mouseUpHandler);
-// document.addEventListener("mouseup", angleMouseUpHandler);
-// miniDom2.addEventListener("touchend", angleMouseUpHandler);
-
-/*
-
-
-*/
 
 const controllers = {
   NO_CONTROLLER: 0,
@@ -463,11 +262,7 @@ let degree = {
   yaw_angle: 0,
   stopSpeedGimbal: 0,
 };
-let chassisNew = new ROSLIB.Topic({
-  ros: ros,
-  name: "/robomaster/chassis",
-  messageType: "geometry_msgs/Twist",
-});
+
 const robot = new RoboController();
 let controller = controllers.NO_CONTROLLER;
 createJoystick();
@@ -585,7 +380,6 @@ robotData.setAttitudeString("(1.0, 1.0, 1.0)");
 robotData.setGimbalStatusString("(15.6, 52.4, 17.3, 52.4)");
 robotData.publishImu("imu");
 imu.subscribe(function (message) {
-  console.log(message.data);
   robotData.setImuString(message.data);
   robotData.publishImu("imu");
 });
@@ -611,34 +405,21 @@ let lineCounter = 2;
 let samplingCounter = 0;
 
 function animate() {
-  if (myRobot && degree && controller !== controller.NO_CONTROLLER) {
-    if (myRobot.rotation.y >= 2 * Math.PI) {
-      myRobot.rotation.y = myRobot.rotation.y - 2 * Math.PI;
+  if (myRobot) {
+    myRobot.position.z = 2.0;
+    if (robotData.position.x) myRobot.position.z = -1 * robotData.position.x;
+    if (robotData.position.y) myRobot.position.x = -1 * robotData.position.y;
+    if (robotData.attitude.x)
+      myRobot.rotation.y = (-1 * (robotData.attitude.x + 180) * Math.PI) / 180;
+    if (degree) {
+      for (let i = 0; i < wheels.length; i++) {
+        wheels[i].rotation.x += Math.abs(robot.positionAngularX / 10);
+        wheels[i].rotation.x += Math.abs(robot.positionX / 10);
+      }
     }
-    if (myRobot.rotation.y < 0) {
-      myRobot.rotation.y = myRobot.rotation.y + 2 * Math.PI;
-    }
-    myRobot.rotation.y += robot.positionAngularX / 100;
 
-    myRobot.position.z +=
-      (Math.cos(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
-    myRobot.position.x +=
-      (Math.sin(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
-    camera.position.z +=
-      (Math.cos(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
-    camera.position.x +=
-      (Math.sin(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
-
-    for (let i = 0; i < wheels.length; i++) {
-      wheels[i].rotation.x += Math.abs(robot.positionAngularX / 10);
-      wheels[i].rotation.x += Math.abs(robot.positionX / 10);
-    }
-    if (positions)
-      positions[lineCounter * 3 - 1] +=
-        (Math.cos(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
-    if (positions)
-      positions[lineCounter * 3 - 3] +=
-        (Math.sin(myRobot.rotation.y) * (-1 * robot.positionX)) / 10;
+    if (positions) positions[lineCounter * 3 - 1] += robotData.position.x;
+    if (positions) positions[lineCounter * 3 - 3] += robotData.position.y;
     if (robot.angularX !== 0) samplingCounter++;
     if (robot.angularX !== 0 && samplingCounter === 30) {
       lineGeometry.setDrawRange(0, lineCounter + 1);
@@ -651,15 +432,15 @@ function animate() {
     }
   }
 
-  if (myRobotTopGun && degree) {
-    myRobotTop.rotation.y += degree.pitch_angle / 100;
+  // if (myRobot && myRobotTopGun && degree) {
+  //   myRobotTop.rotation.y += degree.pitch_angle / 100;
 
-    if (
-      (myRobotTopGun.rotation.x < Math.PI / 4 || degree.yaw_angle < 0) &&
-      (myRobotTopGun.rotation.x > Math.PI / -6 || degree.yaw_angle > 0)
-    )
-      myRobotTopGun.rotation.x += degree.yaw_angle / 100;
-  }
+  //   if (
+  //     (myRobotTopGun.rotation.x < Math.PI / 4 || degree.yaw_angle < 0) &&
+  //     (myRobotTopGun.rotation.x > Math.PI / -6 || degree.yaw_angle > 0)
+  //   )
+  //     myRobotTopGun.rotation.x += degree.yaw_angle / 100;
+  // }
 
   line.geometry.attributes.position.needsUpdate = true; // required after the first render
 

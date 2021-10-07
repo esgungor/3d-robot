@@ -46,6 +46,10 @@ class RobotStatus {
     this.position = position;
   }
 
+  getPosition() {
+    return this.position;
+  }
+
   setPosition(x, y, z) {
     this.position.x = parseFloat(x);
     this.position.y = parseFloat(y);
@@ -97,7 +101,6 @@ class RobotStatus {
   }
   setBattery(percent) {
     this.battery = parseInt(percent);
-    console.log(this.battery, "batarya");
   }
 
   publishBattery(elementID) {
@@ -148,7 +151,6 @@ class RobotStatus {
     positionStr = positionStr.replace("]", "");
     let [accX, accY, accZ, gyroX, gyroY, gyroZ] = positionStr.split(", ");
     this.setImu(accX, accY, accZ, gyroX, gyroY, gyroZ);
-    console.log(accX, accY, accZ, gyroX, gyroY, gyroZ);
   }
   setAttitudeString(positionStr) {
     positionStr = positionStr.replace("[", "");
