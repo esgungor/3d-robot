@@ -60,10 +60,7 @@
                 <div class="col fw-bold">Robot ID</div>
                 <div class="col text-muted">Robomaster S1</div>
               </div>
-              <div class="info row mb-1">
-                <div class="col fw-bold">Battery</div>
-                <div class="col text-muted">Robomaster S1</div>
-              </div>
+            
               <div class="info row">
                 <p class="col fw-bold">Status</p>
                 <!-- <div id="chassis" class="col text-muted">Robomaster S1</div> -->
@@ -108,7 +105,7 @@
             data-bs-parent="#accordionExample"
           >
             <div class="accordion-body">
-              Select your control device from list.
+              Select the control device from the list.
               <div class="dropdown mt-2 text-center">
                 <button
                   class="btn btn-secondary dropdown-toggle"
@@ -117,14 +114,35 @@
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Gamepad
+                  None
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                   <li>
-                    <a class="dropdown-item" href="#">Virtual Joystick</a>
+                    <a  id="controller-virtual" class="dropdown-item" href="#">Virtual Joystick</a>
                   </li>
-                  <li><a class="dropdown-item" href="#">Keyboard</a></li>
+                  <li><a  id="controller-none"class="dropdown-item" href="#">None</a></li>
+                  <li><a  id="controller-gamepad" class="dropdown-item" href="#">Gamepad</a></li>
+
                 </ul>
+              </div>
+<!-- VELOCITY CONTROL  -->
+
+
+                          <div class="dropdown mt-2 text-center">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
+                              aria-expanded="false">
+                              1X
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                              <li>
+                                <a id="velocity-1x" class="dropdown-item" href="#">1X</a>
+                              </li>
+                              <li><a id="velocity-2x" class="dropdown-item" href="#">2X</a></li>
+                              <li><a id="velocity-3x" class="dropdown-item" href="#">3X</a></li>
+                          
+                            </ul>
+                          </div>
+<!-- VELOCITY CONTROL  -->
 
                 <div class="mt-2">
                   <span>Throttle</span>
@@ -140,6 +158,8 @@
                     ></div>
                   </div>
                 </div>
+                
+
 
                 <div class="mt-2">
                   <span>Rotation</span>
@@ -155,7 +175,6 @@
                     ></div>
                   </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>

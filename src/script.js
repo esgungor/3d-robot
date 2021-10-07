@@ -193,23 +193,7 @@ loader.load("gltf/parent.gltf", (gltf) => {
 
   scene.add(gltf.scene);
 });
-createJoystick();
-let rightJoystickInner = document.getElementById("right-inner");
 
-rightJoystickInner.addEventListener("mousedown", mouseDownHandler);
-// miniDom2.addEventListener("mousedown", cameraMouseDownHandler);
-
-// miniDom.addEventListener("touchstart", mouseDownHandler);
-
-// miniDom2.addEventListener("touchstart", cameraMouseDownHandler);
-
-let currentPos = { x: 0, y: 0 };
-
-document.addEventListener("mousemove", move);
-// vj.rightJoystickInner.addEventListener("touchmove", move);
-
-document.addEventListener("mouseup", mouseUpHandler);
-// vj.rightJoystickInner.addEventListener("touchend", mouseUpHandler);
 const colorOuter = "rgba(200, 205, 207, 0.2)";
 const colorInner = "rgba(200, 205, 207, 0.8)";
 
@@ -438,6 +422,12 @@ minimize.onclick = () => {
 
 */
 
+const controllers = {
+  NO_CONTROLLER: 0,
+  GAMEPAD: 1,
+  VIRTUAL: 2,
+};
+
 var ros = new ROSLIB.Ros({
   url: "ws://192.168.50.25:9090",
 });
@@ -479,15 +469,77 @@ let chassisNew = new ROSLIB.Topic({
   messageType: "geometry_msgs/Twist",
 });
 const robot = new RoboController();
+let controller = controllers.NO_CONTROLLER;
+createJoystick();
+
+const virtualJoystick = document.getElementById("controller-virtual");
+const noController = document.getElementById("controller-none");
+const gamepadController = document.getElementById("controller-gamepad");
+const velocity1x = document.getElementById("velocity-1x");
+const velocity2x = document.getElementById("velocity-2x");
+const velocity3x = document.getElementById("velocity-3x");
+let multiplier = 1;
+let dropdownVelocity = document.getElementById("dropdownMenuButton2");
+
+velocity1x.addEventListener("click", () => {
+  multiplier = 1;
+  dropdownVelocity.innerHTML = "1X";
+});
+
+velocity2x.addEventListener("click", () => {
+  multiplier = 2;
+  dropdownVelocity.innerHTML = "2X";
+});
+
+velocity3x.addEventListener("click", () => {
+  multiplier = 3;
+  dropdownVelocity.innerHTML = "3X";
+});
+let dropdownSelect = document.getElementById("dropdownMenuButton1");
+virtualJoystick.addEventListener("click", function () {
+  controller = controllers.VIRTUAL;
+  dropdownSelect.innerHTML = "Virtual Joystick";
+  if (controller === controllers.VIRTUAL) {
+    let rightJoystickInner = document.getElementById("right-inner");
+    rightJoystickInner.addEventListener("mousedown", mouseDownHandler);
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", mouseUpHandler);
+  }
+});
+
+noController.addEventListener("click", function () {
+  controller = controllers.NO_CONTROLLER;
+  dropdownSelect.innerHTML = "None";
+});
+
+gamepadController.addEventListener("click", function () {
+  controller = controllers.GAMEPAD;
+  dropdownSelect.innerHTML = "Gamepad";
+});
 setInterval(() => {
-  degree = getGamepadState();
-  // let joystick = getJoystickState();
-  // console.log(joystick);
-  // degree.linearX = joystick.x / 100;
-  // degree.angularX = joystick.y / 10;
+  switch (controller) {
+    case controllers.NO_CONTROLLER:
+      degree = undefined;
+      return;
+    case controllers.GAMEPAD:
+      degree = getGamepadState();
+      break;
+    case controllers.VIRTUAL:
+      let { x, y, stopSpeedChasis } = getJoystickState();
+
+      degree = {
+        linearX: (-1 * y) / 100,
+        angularX: (-1 * x) / 20,
+        stopSpeedChasis: stopSpeedChasis,
+        pitch_angle: 0,
+        yaw_angle: 0,
+        stopSpeedGimbal: 0,
+      };
+      break;
+  }
   if (degree !== undefined || null) {
     if (degree.angularX !== 0 || degree.linearX !== 0) {
-      robot.setPositionX(degree.linearX);
+      robot.setPositionX(degree.linearX * multiplier);
       robot.setAngularX(degree.angularX);
       robot.publishPosition(chassis);
 
@@ -503,8 +555,8 @@ setInterval(() => {
       robot.publishGimbal(gimbal);
     }
     if (degree.stopSpeedChasis === 1) {
+      console.log(multiplier);
       getAcc(degree.linearX, degree.angularX);
-
       robot.stopMove(chassis);
       degree.stopSpeedChasis = 0;
     }
@@ -514,123 +566,6 @@ setInterval(() => {
     }
   }
 }, 100);
-
-// let moveFlag = false;
-// setInterval(() => {
-//   var chasis = new ROSLIB.Message({
-//     linear: {
-//       x: (-1 * currentPos.y) / 200,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//     angular: {
-//       x: (-1 * cameraPos.x) / 2,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//   });
-//   let gimbalBase = {
-//     linear: {
-//       x: 0.0,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//     angular: {
-//       x: 0.0,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//   };
-//   var gimbalData = new ROSLIB.Message({
-//     linear: {
-//       x: degree.yaw_angle * 10,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//     angular: {
-//       x: degree.pitch_angle * 10,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//   });
-//   if (
-//     (degree && degree.stopSpeedChasis !== 1,
-//     currentPos.y !== 0 ||
-//       (cameraPos.x !== 0 && (degree.angularX !== 0 || degree.linearX !== 0)))
-//   ) {
-//     moveFlag = true;
-//     chassis.publish(chasis);
-//   } else if (moveFlag && degree && degree.stopSpeedChasis === 1) {
-//     degree.stopSpeedChasis = 0;
-//     chasis.linear.x = 0;
-//     chasis.angular.x = 0;
-
-//     chassis.publish(chasis);
-
-//     moveFlag = false;
-//   }
-
-//   if (
-//     (degree && degree.stopSpeedGimbal !== 1,
-//     degree.yaw_angle !== 0 || degree.pitch_angle !== 0)
-//   ) {
-//     moveFlag = true;
-//     gimbalBase.linear.x += degree.yaw_angle * 50;
-//     gimbalBase.angular.x += degree.pitch_angle * 50;
-
-//     gimbal.publish(new ROSLIB.Message(gimbalBase));
-//   } else if (moveFlag && degree && degree.stopSpeedGimbal === 1) {
-//     gimbalData.linear.x = 0;
-//     gimbalData.angular.x = 0;
-//     gimbal.publish(gimbalData);
-
-//     moveFlag = false;
-//   }
-// }, 100);
-
-// setInterval(() => {
-//   let gimbalBase = {
-//     linear: {
-//       x: 0.0,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//     angular: {
-//       x: 0.0,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//   };
-//   var gimbalData = new ROSLIB.Message({
-//     linear: {
-//       x: degree.yaw_angle * 10,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//     angular: {
-//       x: degree.pitch_angle * 10,
-//       y: 0.0,
-//       z: 0.0,
-//     },
-//   });
-
-//   if (
-//     (degree && degree.stopSpeedGimbal !== 1,
-//     degree.yaw_angle !== 0 || degree.pitch_angle !== 0)
-//   ) {
-//     moveFlag = true;
-//     gimbalBase.linear.x += degree.yaw_angle * 50;
-//     gimbalBase.angular.x += degree.pitch_angle * 50;
-
-//     gimbal.publish(new ROSLIB.Message(gimbalBase));
-//   } else if (moveFlag && degree && degree.stopSpeedGimbal === 1) {
-//     gimbalData.linear.x = 0;
-//     gimbalData.angular.x = 0;
-//     gimbal.publish(gimbalData);
-
-//     moveFlag = false;
-//   }
-// }, 100);
 
 // ONLY FOR TESTING PURPOSES
 const robotData = new RobotStatus();
@@ -671,37 +606,12 @@ gimbalRead.subscribe(function (message) {
   robotData.publishGimbalRead("gimbal-angle");
 });
 
-// attitude.subscribe((message) => {
-//   robotData.setPositionString(message);
-//   robotData.publishPosition("chassis");
-// });
-// robotData.publishPosition("chassis");
-
 let lineCounter = 2;
 
 let samplingCounter = 0;
 
-// let degree = {
-//   linearX: 0,
-//   angularX: 0,
-//   stopSpeedChasis: 0,
-//   pitch_angle: 0,
-//   yaw_angle: 0,
-//   stopSpeedGimbal: 0,
-// };
-// let tempDegree = {
-//   linearX: 0,
-//   angularX: 0,
-//   stopSpeedChasis: 0,
-//   pitch_angle: 0,
-//   yaw_angle: 0,
-//   stopSpeedGimbal: 0,
-// };
-// setInterval(() => {
-//   tempDegree = getGamepadState();
-// }, 100);
 function animate() {
-  if (myRobot && degree) {
+  if (myRobot && degree && controller !== controller.NO_CONTROLLER) {
     if (myRobot.rotation.y >= 2 * Math.PI) {
       myRobot.rotation.y = myRobot.rotation.y - 2 * Math.PI;
     }
@@ -740,18 +650,7 @@ function animate() {
       samplingCounter = 0;
     }
   }
-  // if (tempDegree && tempDegree.linearX !== 0 && tempDegree.angularX !== 0) {
-  //   degree = tempDegree;
-  //   cameraPos.x = -1 * degree?.angularX * 100;
 
-  //   currentPos.y = -1 * degree?.linearX * 100;
-  // } else if (tempDegree && tempDegree.stopSpeedChasis) {
-  //   degree.linearX = 0;
-  //   degree.angularX = 0;
-  //   cameraPos.x = -1 * degree?.angularX * 100;
-
-  //   currentPos.y = -1 * degree?.linearX * 100;
-  // }
   if (myRobotTopGun && degree) {
     myRobotTop.rotation.y += degree.pitch_angle / 100;
 
@@ -761,45 +660,6 @@ function animate() {
     )
       myRobotTopGun.rotation.x += degree.yaw_angle / 100;
   }
-
-  // let alpha = 0;
-  // if (myRobot) {
-  //   if (currentPos.y < 50) {
-  //     myRobot.rotation.y -= cameraPos.x / 10000;
-  //   } else {
-  //     myRobot.rotation.y += cameraPos.x / 10000;
-  //   }
-
-  //   alpha = myRobot.rotation.y;
-  //   let condition = (myRobot.rotation.y * 180) / Math.PI;
-
-  //   if (condition < 0) condition = 360 + condition;
-
-  //   myRobot.position.z += (Math.cos(alpha) * currentPos.y) / 800;
-  //   myRobot.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-  //   camera.position.x += (Math.sin(alpha) * currentPos.y) / 800;
-  //   camera.position.z += (Math.cos(alpha) * currentPos.y) / 800;
-  // }
-
-  // for (let i = 0; i < wheels.length; i++) {
-  //   wheels[i].rotation.x += currentPos.y / 800;
-  //   wheels[i].rotation.x += cameraPos.x / 800;
-  // }
-
-  // if (positions)
-  //   positions[lineCounter * 3 - 1] += (Math.cos(alpha) * currentPos.y) / 800;
-  // if (positions)
-  //   positions[lineCounter * 3 - 3] += (Math.sin(alpha) * currentPos.y) / 800;
-  // if (cameraPos.x !== 0) samplingCounter++;
-  // if (cameraPos.x !== 0 && samplingCounter === 30) {
-  //   lineGeometry.setDrawRange(0, lineCounter + 1);
-  //   lineCounter += 1;
-
-  //   positions[lineCounter * 3 - 1] += positions[lineCounter * 3 - 1 - 3];
-  //   positions[lineCounter * 3 - 3] += positions[lineCounter * 3 - 3 - 3];
-
-  //   samplingCounter = 0;
-  // }
 
   line.geometry.attributes.position.needsUpdate = true; // required after the first render
 

@@ -1,6 +1,7 @@
 const chassisController = {
   x: 0,
   y: 0,
+  stopSpeedChasis: 1,
 };
 let dragStart = null;
 
@@ -45,7 +46,7 @@ export const mouseDownHandler = (e) => {
       y: e.clientY,
     };
   }
-  console.log(dragStart);
+  chassisController.stopSpeedChasis = 0;
 };
 
 export const move = (e) => {
@@ -87,6 +88,7 @@ export const mouseUpHandler = (e) => {
   dragStop = true;
   chassisController.x = 0;
   chassisController.y = 0;
+  chassisController.stopSpeedChasis = 1;
 };
 
 export const getJoystickState = () => {

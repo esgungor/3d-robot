@@ -52,6 +52,9 @@ class RoboController {
     });
     rostopic.publish(gimbalData);
   };
+  shot = (rostopic) => {
+    let message = new ROSLIB.Message("1");
+  };
   stopMove = (rostopic) => {
     this.positionX = 0;
     this.positionAngularX = 0;
