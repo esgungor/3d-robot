@@ -22,7 +22,7 @@ import VirtualJoystick, {
   mouseUpHandler,
   move,
 } from "./virtualJoystick";
-import { createChart } from "./chart";
+import { createChart, myChart } from "./chart";
 
 //Map
 
@@ -367,7 +367,7 @@ setInterval(() => {
 }, 100);
 
 // ONLY FOR TESTING PURPOSES
-const robotData = new RobotStatus();
+export const robotData = new RobotStatus();
 robotData.battery = 65;
 robotData.publishBattery("battery-data");
 
@@ -375,7 +375,19 @@ listener.subscribe(function (message) {
   img.src = `data:image/jpeg;base64,${message.data}`;
 });
 
-robotData.setPositionString("(1.44131, 0.0271, 0.0)");
+// robotData.setPositionString("(1.44131, 0.0271, 0.0)");
+// robotData.setPositionString("(2.44131, 0.0271, 0.0)");
+
+// robotData.setPositionString("(3.44131, 0.0271, 0.0)");
+
+// robotData.setPositionString("(4.44131, 0.0271, 0.0)");
+
+// robotData.setPositionString("(5.44131, 0.0271, 0.0)");
+
+// robotData.pushToPositionArray();
+// myChart.update();
+
+let counter = 0;
 robotData.setImuString(
   "(0.02131, 0.00574, -1.00938, -0.00654, -0.00937, 0.0098)"
 );
@@ -397,6 +409,13 @@ battery.subscribe(function (message) {
 });
 position.subscribe(function (message) {
   robotData.setPositionString(message.data);
+  if (counter < 50) {
+    counter += 1;
+  } else {
+    robotData.pushToPositionArray();
+    counter = 0;
+    myChart.update();
+  }
   robotData.publishPosition("position");
 });
 gimbalRead.subscribe(function (message) {
@@ -415,7 +434,7 @@ function animate() {
     if (robotData.position.y) myRobot.position.x = -2 * robotData.position.y;
     if (robotData.attitude.x)
       myRobot.rotation.y = (-1 * (robotData.attitude.x + 180) * Math.PI) / 180;
-    if (degree) {
+    if (degree && robot.positionAngularX && robot.positionX) {
       for (let i = 0; i < wheels.length; i++) {
         wheels[i].rotation.x += Math.abs(robot.positionAngularX / 10);
         wheels[i].rotation.x += Math.abs(robot.positionX / 10);

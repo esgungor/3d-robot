@@ -51,6 +51,29 @@ export const getTopics = (ros) => {
     messageType: "std_msgs/String",
   });
 
+  let escSpeed = new ROSLIB.Topic({
+    ros: ros,
+    name: "/robomaster/esc/speed",
+    messageType: "std_msgs/String",
+  });
+  let escAngle = new ROSLIB.Topic({
+    ros: ros,
+    name: "/robomaster/esc/angle",
+    messageType: "std_msgs/String",
+  });
+
+  let escTimestamp = new ROSLIB.Topic({
+    ros: ros,
+    name: "/robomaster/esc/timestamp",
+    messageType: "std_msgs/String",
+  });
+
+  let escStatus = new ROSLIB.Topic({
+    ros: ros,
+    name: "/robomaster/esc/status",
+    messageType: "std_msgs/String",
+  });
+
   return {
     listener,
     chassis,
@@ -61,5 +84,9 @@ export const getTopics = (ros) => {
     status,
     battery,
     gimbalRead,
+    escSpeed,
+    escAngle,
+    escTimestamp,
+    escStatus,
   };
 };

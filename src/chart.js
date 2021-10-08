@@ -1,17 +1,20 @@
 import Chart from "chart.js/auto";
+import { robotData } from "./script";
 // import { getRelativePosition } from "chart.js/helpers";
 
 const labels = ["Data1", "Data2", "Data3"];
+
+export let myChart = null;
 export const createChart = () => {
   var ctx = document.getElementById("myChart").getContext("2d");
-  var myChart = new Chart(ctx, {
+  myChart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: labels,
+      labels: robotData.positionArrayX,
       datasets: [
         {
-          label: "My First Dataset",
-          data: [65, 59, 80],
+          label: "Linear Data",
+          data: robotData.positionArrayY,
           fill: false,
           borderColor: "rgb(75, 192, 192)",
           tension: 0.1,

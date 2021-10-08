@@ -1,6 +1,9 @@
 class RobotStatus {
   robotID = "NO_ID";
   battery = 100;
+  positionArrayX = [];
+  positionArrayY = [];
+
   position = {
     x: 0,
     y: 0,
@@ -48,6 +51,15 @@ class RobotStatus {
 
   getPosition() {
     return this.position;
+  }
+  pushToPositionArray() {
+    const { x, y, z } = this.position;
+
+    if (this.positionArrayY.length >= 5) this.positionArrayY.shift();
+    if (this.positionArrayX.length >= 5) this.positionArrayX.shift();
+
+    this.positionArrayY.push(y);
+    this.positionArrayX.push(x);
   }
 
   setPosition(x, y, z) {

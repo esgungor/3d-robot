@@ -35,6 +35,7 @@ class RoboController {
         z: 0.0,
       },
       angular: {
+        // x: 0.0,
         x: this.positionAngularX * -100,
         y: 0.0,
         z: 0.0,
