@@ -22,6 +22,7 @@ import VirtualJoystick, {
   mouseUpHandler,
   move,
 } from "./virtualJoystick";
+import { createChart } from "./chart";
 
 //Map
 
@@ -227,7 +228,7 @@ const controllers = {
   VIRTUAL: 2,
 };
 
-var ros = new ROSLIB.Ros({
+export const ros = new ROSLIB.Ros({
   url: "ws://192.168.50.25:9090",
 });
 
@@ -257,6 +258,7 @@ let testX = 0;
 let degree = {
   linearX: 0,
   angularX: 0,
+  linearY: 0,
   stopSpeedChasis: 0,
   pitch_angle: 0,
   yaw_angle: 0,
@@ -333,15 +335,17 @@ setInterval(() => {
       break;
   }
   if (degree !== undefined || null) {
-    if (degree.angularX !== 0 || degree.linearX !== 0) {
+    if (degree.angularX !== 0 || degree.linearX !== 0 || degree.linearY !== 0) {
       robot.setPositionX(degree.linearX * multiplier);
       robot.setAngularX(degree.angularX);
+      robot.setPositionY(degree.linearY);
       robot.publishPosition(chassis);
 
       getAcc(degree.linearX, degree.angularX);
 
       degree.angularX = 0;
       degree.linearX = 0;
+      degree.linearY = 0;
     }
 
     if (degree.pitch_angle !== 0 || degree.yaw_angle !== 0) {
@@ -403,12 +407,12 @@ gimbalRead.subscribe(function (message) {
 let lineCounter = 2;
 
 let samplingCounter = 0;
-
+createChart();
 function animate() {
   if (myRobot) {
     myRobot.position.z = 2.0;
-    if (robotData.position.x) myRobot.position.z = -1 * robotData.position.x;
-    if (robotData.position.y) myRobot.position.x = -1 * robotData.position.y;
+    if (robotData.position.x) myRobot.position.z = 2 * robotData.position.x;
+    if (robotData.position.y) myRobot.position.x = -2 * robotData.position.y;
     if (robotData.attitude.x)
       myRobot.rotation.y = (-1 * (robotData.attitude.x + 180) * Math.PI) / 180;
     if (degree) {
@@ -418,8 +422,8 @@ function animate() {
       }
     }
 
-    if (positions) positions[lineCounter * 3 - 1] += robotData.position.x;
-    if (positions) positions[lineCounter * 3 - 3] += robotData.position.y;
+    if (positions) positions[lineCounter * 3 - 1] = 2 * robotData.position.x;
+    if (positions) positions[lineCounter * 3 - 3] = -2 * robotData.position.y;
     if (robot.angularX !== 0) samplingCounter++;
     if (robot.angularX !== 0 && samplingCounter === 30) {
       lineGeometry.setDrawRange(0, lineCounter + 1);

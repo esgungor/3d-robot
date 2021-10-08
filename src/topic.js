@@ -44,11 +44,7 @@ export const getTopics = (ros) => {
     name: "/robomaster/battery",
     messageType: "std_msgs/Float64",
   });
-  let blaster = new ROSLIB.Topic({
-    ros: ros,
-    name: "/robomaster/blaster",
-    messageType: "std_msgs/String",
-  });
+
   let gimbalRead = new ROSLIB.Topic({
     ros: ros,
     name: "/robomaster/gimbal_angle",

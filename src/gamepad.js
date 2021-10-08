@@ -1,6 +1,13 @@
+import { blasterTrigger } from "./additionalTopic";
+import { ros } from "./script";
+
 const refreshRate = 250;
 var stopSpeedChasis = 0;
 var stopSpeedGimbal = 0;
+var deneme = 0;
+
+//last pressed button for axis control
+var pressedID = 0;
 
 let xAxis = document.getElementById("x-axis");
 let yAxis = document.getElementById("y-axis");
@@ -31,6 +38,7 @@ function decimalAdjust(type, value, exp) {
 const logs = {
   angularX: 0,
   linearX: 0,
+  linearY: 0,
   stopSpeedChasis: 0,
   pitch_angle: 0,
   yaw_angle: 0,
@@ -54,7 +62,9 @@ export function getGamepadState() {
   const pressedButtons = gamepad.buttons
     .map((button, id) => ({ id, button }))
     .filter(isPressed);
-
+  const linearYMove = gamepad.buttons
+    .map((button, id) => ({ id, button }))
+    .filter((obj) => obj.id === 5 || obj.id === 4);
   //Left
   if (gamepads[0].axes[0] || gamepads[0].axes[1]) {
     var linearX = round10(gamepads[0].axes[1] * -1, -1);
@@ -105,8 +115,36 @@ export function getGamepadState() {
       }
     }
     for (const button of pressedButtons) {
-      console.log(button);
-      console.log(`Button ${button.id} was pressed.`);
+      // its not good option to CALL ROS CONNECTION HERE!!
+      if (button.id === 11) {
+        blasterTrigger(ros, { data: "1" });
+      }
+    }
+
+    for (const button of linearYMove) {
+      // its not good option to CALL ROS CONNECTION HERE!!
+      // if (button.id === 5 && !button.button.pressed) {
+      //   console.log(button);
+      // }
+      if (button.button.pressed) {
+        console.log("çalıştım");
+        if (button.id === 5) {
+          logs.linearY = 1.0;
+          pressedID = 5;
+        }
+        if (button.id === 4) {
+          logs.linearY = -1.0;
+          pressedID = 4;
+        }
+        deneme = 1;
+      } else if (button.id === pressedID && !button.button.pressed) {
+        if (deneme === 1) {
+          logs.linearY = 0.0;
+          deneme = 0;
+          logs.stopSpeedChasis = 1;
+          console.log("durdum");
+        }
+      }
     }
   }
   return logs;

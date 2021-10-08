@@ -1,6 +1,7 @@
 class RoboController {
   positionX = 0;
   positionAngularX = 0;
+  linearY = 0;
   gimbalX = 0;
   gimbalAngularX = 0;
   stopFlag = false;
@@ -16,6 +17,10 @@ class RoboController {
   setAngularX = (x) => {
     this.positionAngularX = x;
   };
+
+  setPositionY = (linearY) => {
+    this.linearY = linearY;
+  };
   setGimbal = (x) => {
     this.gimbalX = x;
   };
@@ -26,7 +31,7 @@ class RoboController {
     let positionData = new ROSLIB.Message({
       linear: {
         x: this.positionX,
-        y: 0.0,
+        y: this.linearY,
         z: 0.0,
       },
       angular: {
@@ -60,6 +65,7 @@ class RoboController {
     this.positionAngularX = 0;
     this.gimbalX = 0;
     this.gimbalAngularX = 0;
+    this.linearY = 0;
     this.stopFlag = false;
     let empty = new ROSLIB.Message({
       linear: {
