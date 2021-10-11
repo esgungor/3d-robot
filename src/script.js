@@ -272,19 +272,26 @@ let degree = {
 let saveData = "0";
 let replayData = "0";
 let inputData = "";
-let input = document.getElementById("duration");
-console.log(input);
-input.addEventListener("input", (e) => {
-  inputData = e.target.value;
+// let input = document.getElementById("duration");
+// input.addEventListener("input", (e) => {
+//   inputData = e.target.value;
+// });
+
+let stop = document.getElementById("rosbag-stop");
+stop.addEventListener("click", () => {
+  let recordMessage = new ROSLIB.Message({ data: `0, ${inputData}` });
+  rosbagSave.publish(recordMessage);
+  stop.style.display = "none";
+  save.style.display = "block";
 });
 
 let save = document.getElementById("rosbag-save");
 save.addEventListener("click", () => {
-  console.log("testify");
-  saveData = "1";
   let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
   rosbagSave.publish(recordMessage);
-  startTime = Date.now();
+  stop.style.display = "block";
+  save.style.display = "none";
+  // startTime = Date.now();
 });
 let startTime = undefined;
 
@@ -296,24 +303,24 @@ replay.addEventListener("click", () => {
   controller = controllers.NO_CONTROLLER;
   dropdownSelect.innerHTML = "None";
   rosbagReplay.publish(replayMessage);
-  startTime = Date.now();
+  // startTime = Date.now();
 });
 
-let timer = document.getElementById("timer");
-setInterval(() => {
-  if (startTime) {
-    console.log("triggered!");
-    let delta = inputData - Math.floor((Date.now() - startTime) / 1000);
-    timer.innerHTML = `${delta}`;
-    timer.style.color = "red";
-    if (delta <= 0) {
-      startTime = undefined;
-      timer.innerHTML = "";
-      controller = controllers.GAMEPAD;
-      dropdownSelect.innerHTML = "Gamepad";
-    }
-  }
-}, 1000);
+// let timer = document.getElementById("timer");
+// setInterval(() => {
+//   if (startTime) {
+//     console.log("triggered!");
+//     let delta = inputData - Math.floor((Date.now() - startTime) / 1000);
+//     timer.innerHTML = `${delta}`;
+//     timer.style.color = "red";
+//     if (delta <= 0) {
+//       startTime = undefined;
+//       timer.innerHTML = "";
+//       controller = controllers.GAMEPAD;
+//       dropdownSelect.innerHTML = "Gamepad";
+//     }
+//   }
+// }, 1000);
 
 const robot = new RoboController();
 let controller = controllers.NO_CONTROLLER;
