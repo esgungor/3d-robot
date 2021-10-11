@@ -257,6 +257,7 @@ let {
   escStatus,
   rosbagReplay,
   rosbagSave,
+  log,
 } = getTopics(ros);
 let testX = 0;
 
@@ -277,9 +278,17 @@ let inputData = "";
 //   inputData = e.target.value;
 // });
 
+let logArea = document.getElementById("log");
+log.subscribe(function (message) {
+  console.log(message.data);
+  logArea.innerHTML += `${message.data} <br />`;
+});
+
 let stop = document.getElementById("rosbag-stop");
 stop.addEventListener("click", () => {
-  let recordMessage = new ROSLIB.Message({ data: `0, ${inputData}` });
+  let recordMessage = new ROSLIB.Message({ data: `0` });
+  // let recordMessage = new ROSLIB.Message({ data: `0, ${inputData}` });
+
   rosbagSave.publish(recordMessage);
   stop.style.display = "none";
   save.style.display = "block";
@@ -287,7 +296,9 @@ stop.addEventListener("click", () => {
 
 let save = document.getElementById("rosbag-save");
 save.addEventListener("click", () => {
-  let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
+  let recordMessage = new ROSLIB.Message({ data: `1` });
+  // let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
+
   rosbagSave.publish(recordMessage);
   stop.style.display = "block";
   save.style.display = "none";

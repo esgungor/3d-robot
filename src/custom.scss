@@ -3,7 +3,21 @@ $body-color: #d7e1e2;
 $text-muted: #adb5bd;
 $secondary: #1d2224;
 $primary: rgba(36, 56, 63, 0.8);
+// scrollbar section!!
 
+.ros-log::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ros-log::-webkit-scrollbar-track {
+  background-color: #c8c8c8;
+  border-radius: 100px;
+}
+
+.ros-log::-webkit-scrollbar-thumb {
+  background-color: var(--lighter-interface);
+  border-radius: 100px;
+}
 .joystick-left-outer {
   z-index: 10000000;
   position: fixed;
@@ -59,6 +73,7 @@ $primary: rgba(36, 56, 63, 0.8);
   top: 50%;
   transform: translateY(-50%);
   overflow: hidden;
+
   border-radius: 5px;
 }
 
@@ -81,8 +96,14 @@ $primary: rgba(36, 56, 63, 0.8);
 }
 
 .ros-log {
+  border-radius: 0px 0px 5px 5px;
+  overflow: auto;
+  background-color: black;
+  display: block;
+  height: 100px;
   font-size: 0.7rem;
-  color: $text-muted;
+  // color: $text-muted;
+  color: #fff;
 }
 
 .rosbag {

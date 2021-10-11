@@ -83,6 +83,11 @@ export const getTopics = (ros) => {
     messageType: "std_msgs/String",
   });
 
+  let log = new ROSLIB.Topic({
+    ros: ros,
+    name: "/robomaster/log",
+    messageType: "std_msgs/String",
+  });
   return {
     listener,
     chassis,
@@ -100,5 +105,6 @@ export const getTopics = (ros) => {
     escStatus,
     rosbagReplay,
     rosbagSave,
+    log,
   };
 };

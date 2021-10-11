@@ -88,9 +88,9 @@ class RobotStatus {
   }
 
   setPosition(x, y, z) {
-    this.position.x = parseFloat(x);
-    this.position.y = parseFloat(y);
-    this.position.z = parseFloat(z);
+    this.position.x = parseFloat(x).toFixed(3);
+    this.position.y = parseFloat(y).toFixed(3);
+    this.position.z = parseFloat(z).toFixed(3);
   }
   setAttitude(x, y, z) {
     this.attitude.x = parseFloat(x);
@@ -231,7 +231,6 @@ class RobotStatus {
     escStr = escStr.replace("]", "");
 
     const [w1, w2, w3, w4] = escStr.split(", ");
-    console.log(w1);
 
     this.setESCTimestamp(w1, w2, w3, w4);
   }
