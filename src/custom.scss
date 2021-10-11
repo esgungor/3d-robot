@@ -84,4 +84,9 @@ $primary: rgba(36, 56, 63, 0.8);
   font-size: 0.7rem;
   color: $text-muted;
 }
+
+.rosbag {
+  display: flex;
+  justify-content: space-around;
+}
 @import "../node_modules/bootstrap/scss/bootstrap";

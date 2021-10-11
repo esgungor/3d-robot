@@ -9,8 +9,6 @@ import { getAcc, getGamepadState } from "./gamepad";
 import "./style.scss";
 import "./custom.scss";
 
-import "bootstrap/js/dist/collapse";
-
 import RoboController from "./ros";
 import { createEvent } from "./events";
 import RobotStatus from "./robotStatus";
@@ -251,7 +249,14 @@ let {
   imu,
   status,
   battery,
+
   gimbalRead,
+  escSpeed,
+  escAngle,
+  escTimestamp,
+  escStatus,
+  rosbagReplay,
+  rosbagSave,
 } = getTopics(ros);
 let testX = 0;
 
@@ -264,6 +269,51 @@ let degree = {
   yaw_angle: 0,
   stopSpeedGimbal: 0,
 };
+let saveData = "0";
+let replayData = "0";
+let inputData = "";
+let input = document.getElementById("duration");
+console.log(input);
+input.addEventListener("input", (e) => {
+  inputData = e.target.value;
+});
+
+let save = document.getElementById("rosbag-save");
+save.addEventListener("click", () => {
+  console.log("testify");
+  saveData = "1";
+  let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
+  rosbagSave.publish(recordMessage);
+  startTime = Date.now();
+});
+let startTime = undefined;
+
+let replay = document.getElementById("rosbag-replay");
+replay.addEventListener("click", () => {
+  console.log("testify");
+  replayData = "1";
+  let replayMessage = new ROSLIB.Message({ data: "1" });
+  controller = controllers.NO_CONTROLLER;
+  dropdownSelect.innerHTML = "None";
+  rosbagReplay.publish(replayMessage);
+  startTime = Date.now();
+});
+
+let timer = document.getElementById("timer");
+setInterval(() => {
+  if (startTime) {
+    console.log("triggered!");
+    let delta = inputData - Math.floor((Date.now() - startTime) / 1000);
+    timer.innerHTML = `${delta}`;
+    timer.style.color = "red";
+    if (delta <= 0) {
+      startTime = undefined;
+      timer.innerHTML = "";
+      controller = controllers.GAMEPAD;
+      dropdownSelect.innerHTML = "Gamepad";
+    }
+  }
+}, 1000);
 
 const robot = new RoboController();
 let controller = controllers.NO_CONTROLLER;
@@ -275,21 +325,21 @@ const gamepadController = document.getElementById("controller-gamepad");
 const velocity1x = document.getElementById("velocity-1x");
 const velocity2x = document.getElementById("velocity-2x");
 const velocity3x = document.getElementById("velocity-3x");
-let multiplier = 1;
+let multiplier = 0.5;
 let dropdownVelocity = document.getElementById("dropdownMenuButton2");
 
 velocity1x.addEventListener("click", () => {
-  multiplier = 1;
+  multiplier = 0.5;
   dropdownVelocity.innerHTML = "1X";
 });
 
 velocity2x.addEventListener("click", () => {
-  multiplier = 2;
+  multiplier = 1;
   dropdownVelocity.innerHTML = "2X";
 });
 
 velocity3x.addEventListener("click", () => {
-  multiplier = 3;
+  multiplier = 2;
   dropdownVelocity.innerHTML = "3X";
 });
 let dropdownSelect = document.getElementById("dropdownMenuButton1");
@@ -394,6 +444,9 @@ robotData.setImuString(
 
 robotData.setAttitudeString("(1.0, 1.0, 1.0)");
 robotData.setGimbalStatusString("(15.6, 52.4, 17.3, 52.4)");
+robotData.setESCStatusString("[0, 0, 0, 0]");
+robotData.publishESCStatus("esc-status");
+
 robotData.publishImu("imu");
 imu.subscribe(function (message) {
   robotData.setImuString(message.data);
@@ -414,9 +467,26 @@ position.subscribe(function (message) {
   } else {
     robotData.pushToPositionArray();
     counter = 0;
-    myChart.update();
+    // myChart.update();
   }
   robotData.publishPosition("position");
+});
+escSpeed.subscribe(function (message) {
+  robotData.setESCSpeedString(message.data);
+  robotData.publishESCSpeed("esc-speed");
+});
+
+escAngle.subscribe(function (message) {
+  robotData.setESCAngleString(message.data);
+  robotData.publishESCAngle("esc-angle");
+});
+escTimestamp.subscribe(function (message) {
+  robotData.setESCTimestampString(message.data);
+  robotData.publishESCTimestamp("esc-timestamp");
+});
+escStatus.subscribe(function (message) {
+  robotData.setESCStatusString(message.data);
+  robotData.publishESCStatus("esc-status");
 });
 gimbalRead.subscribe(function (message) {
   robotData.setGimbalStatusString(message.data);
@@ -426,7 +496,7 @@ gimbalRead.subscribe(function (message) {
 let lineCounter = 2;
 
 let samplingCounter = 0;
-createChart();
+// createChart();
 function animate() {
   if (myRobot) {
     myRobot.position.z = 2.0;
@@ -455,15 +525,17 @@ function animate() {
     }
   }
 
-  // if (myRobot && myRobotTopGun && degree) {
-  //   myRobotTop.rotation.y += degree.pitch_angle / 100;
+  if (myRobot && myRobotTopGun && degree) {
+    myRobotTop.rotation.y = (robotData.gimbalStatus.yawAngle * Math.PI) / 180;
+    myRobotTopGun.rotation.x =
+      (robotData.gimbalStatus.pitchAngle * Math.PI) / 180;
 
-  //   if (
-  //     (myRobotTopGun.rotation.x < Math.PI / 4 || degree.yaw_angle < 0) &&
-  //     (myRobotTopGun.rotation.x > Math.PI / -6 || degree.yaw_angle > 0)
-  //   )
-  //     myRobotTopGun.rotation.x += degree.yaw_angle / 100;
-  // }
+    // if (
+    //   (myRobotTopGun.rotation.x < Math.PI / 4 || degree.yaw_angle < 0) &&
+    //   (myRobotTopGun.rotation.x > Math.PI / -6 || degree.yaw_angle > 0)
+    // )
+    //   myRobotTopGun.rotation.x += degree.yaw_angle / 100;
+  }
 
   line.geometry.attributes.position.needsUpdate = true; // required after the first render
 

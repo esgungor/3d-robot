@@ -14,6 +14,31 @@ class RobotStatus {
     y: 0,
     z: 0,
   };
+
+  escSpeed = {
+    w1: 0,
+    w2: 0,
+    w3: 0,
+    w4: 0,
+  };
+  escAngle = {
+    w1: 0,
+    w2: 0,
+    w3: 0,
+    w4: 0,
+  };
+  escTimestamp = {
+    w1: 0,
+    w2: 0,
+    w3: 0,
+    w4: 0,
+  };
+  escStatus = {
+    w1: 0,
+    w2: 0,
+    w3: 0,
+    w4: 0,
+  };
   subInfo = {
     staticFlag: 0,
     upHill: 0,
@@ -111,6 +136,34 @@ class RobotStatus {
     this.imu.gyroY = parseFloat(gyroY).toFixed(2);
     this.imu.gyroZ = parseFloat(gyroZ).toFixed(2);
   }
+
+  setESCSpeed(w1, w2, w3, w4) {
+    this.escSpeed.w1 = parseInt(w1);
+    this.escSpeed.w2 = parseInt(w2);
+    this.escSpeed.w3 = parseInt(w3);
+    this.escSpeed.w4 = parseInt(w4);
+  }
+
+  setESCAngle(w1, w2, w3, w4) {
+    this.escAngle.w1 = parseInt(w1);
+    this.escAngle.w2 = parseInt(w2);
+    this.escAngle.w3 = parseInt(w3);
+    this.escAngle.w4 = parseInt(w4);
+  }
+
+  setESCTimestamp(w1, w2, w3, w4) {
+    this.escTimestamp.w1 = parseInt(w1);
+    this.escTimestamp.w2 = parseInt(w2);
+    this.escTimestamp.w3 = parseInt(w3);
+    this.escTimestamp.w4 = parseInt(w4);
+  }
+
+  setESCStatus(w1, w2, w3, w4) {
+    this.escStatus.w1 = parseInt(w1);
+    this.escStatus.w2 = parseInt(w2);
+    this.escStatus.w3 = parseInt(w3);
+    this.escStatus.w4 = parseInt(w4);
+  }
   setBattery(percent) {
     this.battery = parseInt(percent);
   }
@@ -149,6 +202,52 @@ class RobotStatus {
   publishGimbalRead(elementID) {
     let htmlObject = document.getElementById(elementID);
     htmlObject.innerHTML = `<strong>Pitch Angle: </strong>${this.gimbalStatus.pitchAngle}<br /><strong>Yaw Angle: </strong>${this.gimbalStatus.yawAngle}<br /><strong>Pitch Ground Angle:</strong> ${this.gimbalStatus.pitchGroundAngle}<br /><strong>Yaw Ground Angle:</strong> ${this.gimbalStatus.pitchGroundAngle}`;
+  }
+  publishESCSpeed(elementID) {
+    const htmlObject = document.getElementById(elementID);
+    htmlObject.innerHTML = `<strong>W1: </strong>${this.escSpeed.w1} <strong>W2: </strong>${this.escSpeed.w2} <strong>W3: </strong>${this.escSpeed.w3}<strong> W4: </strong>${this.escSpeed.w4}`;
+  }
+  publishESCAngle(elementID) {
+    const htmlObject = document.getElementById(elementID);
+    htmlObject.innerHTML = `<strong>W1: </strong>${this.escAngle.w1} <strong>W2: </strong>${this.escAngle.w2} <strong>W3: </strong>${this.escAngle.w3}<strong> W4: </strong>${this.escAngle.w4}`;
+  }
+  publishESCTimestamp(elementID) {
+    const htmlObject = document.getElementById(elementID);
+    htmlObject.innerHTML = `<strong>W1: </strong>${this.escTimestamp.w1} <strong>W2: </strong>${this.escTimestamp.w2} <strong>W3: </strong>${this.escTimestamp.w3}<strong> W4: </strong>${this.escTimestamp.w4}`;
+  }
+  publishESCStatus(elementID) {
+    const htmlObject = document.getElementById(elementID);
+    htmlObject.innerHTML = `<strong>W1: </strong>${this.escStatus.w1} <strong>W2: </strong>${this.escStatus.w2} <strong>W3: </strong>${this.escStatus.w3}<strong> W4: </strong>${this.escStatus.w4}`;
+  }
+  setESCAngleString(escStr) {
+    escStr = escStr.replace("[", "");
+    escStr = escStr.replace("]", "");
+    const [w1, w2, w3, w4] = escStr.split(", ");
+
+    this.setESCAngle(w1, w2, w3, w4);
+  }
+  setESCTimestampString(escStr) {
+    escStr = escStr.replace("[", "");
+    escStr = escStr.replace("]", "");
+
+    const [w1, w2, w3, w4] = escStr.split(", ");
+    console.log(w1);
+
+    this.setESCTimestamp(w1, w2, w3, w4);
+  }
+  setESCStatusString(escStr) {
+    escStr = escStr.replace("[", "");
+    escStr = escStr.replace("]", "");
+    const [w1, w2, w3, w4] = escStr.split(", ");
+
+    this.setESCStatus(w1, w2, w3, w4);
+  }
+  setESCSpeedString(escStr) {
+    escStr = escStr.replace("[", "");
+    escStr = escStr.replace("]", "");
+    const [w1, w2, w3, w4] = escStr.split(", ");
+
+    this.setESCSpeed(w1, w2, w3, w4);
   }
 
   setPositionString(positionStr) {

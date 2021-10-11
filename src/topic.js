@@ -50,7 +50,16 @@ export const getTopics = (ros) => {
     name: "/robomaster/gimbal_angle",
     messageType: "std_msgs/String",
   });
-
+  let rosbagReplay = new ROSLIB.Topic({
+    ros: ros,
+    name: "/robomaster/play",
+    messageType: "std_msgs/String",
+  });
+  let rosbagSave = new ROSLIB.Topic({
+    ros: ros,
+    name: "/robomaster/record",
+    messageType: "std_msgs/String",
+  });
   let escSpeed = new ROSLIB.Topic({
     ros: ros,
     name: "/robomaster/esc/speed",
@@ -86,7 +95,10 @@ export const getTopics = (ros) => {
     gimbalRead,
     escSpeed,
     escAngle,
+
     escTimestamp,
     escStatus,
+    rosbagReplay,
+    rosbagSave,
   };
 };
