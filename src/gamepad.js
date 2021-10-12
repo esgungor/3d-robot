@@ -1,5 +1,5 @@
 import { blasterTrigger } from "./additionalTopic";
-import { ros } from "./script";
+import { decreaseMultiplier, increaseMultiplier, ros } from "./script";
 
 const refreshRate = 250;
 var stopSpeedChasis = 0;
@@ -49,7 +49,7 @@ const round10 = (value, exp) => decimalAdjust("round", value, exp);
 export function getGamepadState() {
   // Returns up to 4 gamepads.
   const gamepads = navigator.getGamepads();
-
+  let speed = 0.5;
   // We take the first one, for simplicity
   const gamepad = gamepads[0];
 
@@ -118,6 +118,12 @@ export function getGamepadState() {
       // its not good option to CALL ROS CONNECTION HERE!!
       if (button.id === 11) {
         blasterTrigger(ros, { data: "1" });
+      }
+      if (button.id === 12) {
+        increaseMultiplier();
+      }
+      if (button.id === 13) {
+        decreaseMultiplier();
       }
     }
 

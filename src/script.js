@@ -346,6 +346,18 @@ const velocity3x = document.getElementById("velocity-3x");
 let multiplier = 0.5;
 let dropdownVelocity = document.getElementById("dropdownMenuButton2");
 
+export const increaseMultiplier = () => {
+  if (multiplier >= 8) return;
+  multiplier *= 2;
+  dropdownVelocity.innerHTML = `${multiplier * 2}X`;
+};
+
+export const decreaseMultiplier = () => {
+  if (multiplier <= 0.255) return;
+
+  multiplier /= 2;
+  dropdownVelocity.innerHTML = `${multiplier * 2}X`;
+};
 velocity1x.addEventListener("click", () => {
   multiplier = 0.5;
   dropdownVelocity.innerHTML = "1X";
@@ -543,7 +555,11 @@ function animate() {
     }
   }
 
-  if (myRobot && myRobotTopGun && degree) {
+  if (
+    robotData.gimbalStatus.yawAngle &&
+    robotData.gimbalStatus.pitchAngle &&
+    myRobotTopGun
+  ) {
     myRobotTop.rotation.y = (robotData.gimbalStatus.yawAngle * Math.PI) / 180;
     myRobotTopGun.rotation.x =
       (robotData.gimbalStatus.pitchAngle * Math.PI) / 180;
