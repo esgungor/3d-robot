@@ -22,7 +22,8 @@ import VirtualJoystick, {
 } from "./virtualJoystick";
 import { createChart, myChart } from "./chart";
 
-const rosbridge_endpoint = process.env.ROSBRIDGE || "ws://127.0.0.1:9090";
+const rosbridge_endpoint = process.env.ROSBRIDGE || "ws://127.0.0.1";
+console.log(rosbridge_endpoint);
 //Map
 
 // Debug
