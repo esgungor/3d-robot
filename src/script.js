@@ -22,6 +22,7 @@ import VirtualJoystick, {
 } from "./virtualJoystick";
 import { createChart, myChart } from "./chart";
 
+const rosbridge_endpoint = process.env.ROSBRIDGE || "ws://127.0.0.1:9090";
 //Map
 
 // Debug
@@ -227,14 +228,20 @@ const controllers = {
 };
 
 export const ros = new ROSLIB.Ros({
-  url: "ws://192.168.50.25:9090",
+  url: rosbridge_endpoint,
 });
 
 ros.on("error", () => {
-  createEvent("Connection Error", "ROS Bridge connection has failed.");
+  createEvent(
+    "Connection Error",
+    `ROS Bridge connection has failed. Check bridge endpoint ${rosbridge_endpoint}`
+  );
 });
 ros.on("connection", () => {
-  createEvent("Connection Successful", "ROS Bridge connected");
+  createEvent(
+    "Connection Successful",
+    `ROS Bridge connected. Serving at ${rosbridge_endpoint}`
+  );
 });
 
 var img = document.getElementById("test");

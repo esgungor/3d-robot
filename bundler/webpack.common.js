@@ -1,8 +1,10 @@
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
-const path = require("path");
 
+const path = require("path");
+const webpack = require("webpack");
+require("dotenv").config();
 module.exports = {
   entry: path.resolve(__dirname, "../src/script.js"),
   output: {
@@ -11,6 +13,13 @@ module.exports = {
   },
   devtool: "source-map",
   plugins: [
+    new webpack.DefinePlugin({
+      process: {
+        env: {
+          ROSBRIDGE: JSON.stringify(process.env.ROSBRIDGE),
+        },
+      },
+    }),
     new CopyWebpackPlugin({
       patterns: [{ from: path.resolve(__dirname, "../static") }],
     }),
