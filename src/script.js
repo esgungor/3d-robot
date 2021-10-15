@@ -21,7 +21,7 @@ import VirtualJoystick, {
 } from "./virtualJoystick";
 import { createChart, myChart } from "./chart";
 
-const rosbridge_endpoint = process.env.ROSBRIDGE || "ws://127.0.0.1";
+const rosbridge_endpoint = process.env.ROSBRIDGE || "ws://192.168.50.25:9090";
 console.log(rosbridge_endpoint);
 //Map
 
@@ -459,7 +459,8 @@ robotData.battery = 65;
 robotData.publishBattery("battery-data");
 
 listener.subscribe(function (message) {
-  img.src = `data:image/jpeg;base64,${message.data}`;
+  const realImg = message.data.replace(/(^"|"$)/g, "");
+  img.src = `data:image/jpeg;base64,${realImg}`;
 });
 
 // robotData.setPositionString("(1.44131, 0.0271, 0.0)");

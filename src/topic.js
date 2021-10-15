@@ -2,7 +2,7 @@ export const getTopics = (ros) => {
   let listener = new ROSLIB.Topic({
     ros: ros,
     name: "/robomaster/image",
-    messageType: "sensor_msgs/CompressedImage",
+    messageType: "std_msgs/String",
   });
 
   let chassis = new ROSLIB.Topic({
