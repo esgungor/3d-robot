@@ -333,7 +333,7 @@ let replay = document.getElementById("rosbag-replay");
 replay.addEventListener("click", () => {
   console.log("testify");
   countdownOn = replayData = "1";
-  let replayMessage = new ROSLIB.Message({ data: "1" });
+  let replayMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
   controller = controllers.NO_CONTROLLER;
   dropdownSelect.innerHTML = "None";
   rosbagReplay.publish(replayMessage);
