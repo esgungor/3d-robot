@@ -318,7 +318,7 @@ let countdownOn = false;
 
 let save = document.getElementById("rosbag-save");
 save.addEventListener("click", () => {
-  let recordMessage = new ROSLIB.Message({ data: `1` });
+  let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
   // let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
 
   rosbagSave.publish(recordMessage);
