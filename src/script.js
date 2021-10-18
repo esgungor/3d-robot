@@ -280,10 +280,10 @@ let degree = {
 let saveData = "0";
 let replayData = "0";
 let inputData = "";
-// let input = document.getElementById("duration");
-// input.addEventListener("input", (e) => {
-//   inputData = e.target.value;
-// });
+let input = document.getElementById("rosbag-name");
+input.addEventListener("input", (e) => {
+  inputData = e.target.value;
+});
 
 let logArea = document.getElementById("log");
 log.subscribe(function (message) {
