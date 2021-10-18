@@ -291,15 +291,30 @@ log.subscribe(function (message) {
   logArea.innerHTML += `${message.data} <br />`;
 });
 
+const storedInputData = window.localStorage.getItem("rosbag-time");
+if (storedInputData) {
+  inputData = storedInputData;
+  // createEvent("Stored Move", "Store move is detected!");
+}
 let stop = document.getElementById("rosbag-stop");
 stop.addEventListener("click", () => {
-  let recordMessage = new ROSLIB.Message({ data: `0` });
+  let recordMessage = new ROSLIB.Message({ data: `0, ${inputData}` });
   // let recordMessage = new ROSLIB.Message({ data: `0, ${inputData}` });
 
   rosbagSave.publish(recordMessage);
   stop.style.display = "none";
   save.style.display = "block";
+  timerOn = false;
+  startTime = undefined;
+  timer.innerHTML = "";
+  controller = controllers.GAMEPAD;
+  dropdownSelect.innerHTML = "Gamepad";
+  window.localStorage.setItem("rosbag-time", inputData);
+  createEvent("ROSBAG", "State of the robot is saved!");
 });
+
+let timerOn = false;
+let countdownOn = false;
 
 let save = document.getElementById("rosbag-save");
 save.addEventListener("click", () => {
@@ -309,22 +324,53 @@ save.addEventListener("click", () => {
   rosbagSave.publish(recordMessage);
   stop.style.display = "block";
   save.style.display = "none";
-  // startTime = Date.now();
+  startTime = Date.now();
+  timerOn = true;
 });
 let startTime = undefined;
 
 let replay = document.getElementById("rosbag-replay");
 replay.addEventListener("click", () => {
   console.log("testify");
-  replayData = "1";
+  countdownOn = replayData = "1";
   let replayMessage = new ROSLIB.Message({ data: "1" });
   controller = controllers.NO_CONTROLLER;
   dropdownSelect.innerHTML = "None";
   rosbagReplay.publish(replayMessage);
-  // startTime = Date.now();
+  startTime = Date.now();
+  countdownOn = true;
 });
 
-// let timer = document.getElementById("timer");
+let timer = document.getElementById("timer");
+
+//Timer start
+
+setInterval(() => {
+  if (startTime) {
+    console.log("triggered!");
+    let delta = 0;
+    if (timerOn) {
+      delta = Math.floor((Date.now() - startTime) / 1000);
+      inputData = delta;
+      console.log(delta, "heyy");
+    } else if (countdownOn) {
+      delta = inputData - Math.floor((Date.now() - startTime) / 1000);
+    }
+
+    timer.innerHTML = `${delta}`;
+    console.log(delta);
+    timer.style.color = "red";
+    if (delta <= 0 && countdownOn) {
+      startTime = undefined;
+      timer.innerHTML = "";
+      controller = controllers.GAMEPAD;
+      dropdownSelect.innerHTML = "Gamepad";
+      countdownOn = false;
+    }
+  }
+}, 1000);
+
+//Countdown
 // setInterval(() => {
 //   if (startTime) {
 //     console.log("triggered!");
