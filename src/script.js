@@ -280,9 +280,10 @@ let degree = {
 let saveData = "0";
 let replayData = "0";
 let inputData = "";
+let rosbagName = "";
 let input = document.getElementById("rosbag-name");
 input.addEventListener("input", (e) => {
-  inputData = e.target.value;
+  rosbagName = e.target.value;
 });
 
 let logArea = document.getElementById("log");
@@ -298,7 +299,7 @@ if (storedInputData) {
 }
 let stop = document.getElementById("rosbag-stop");
 stop.addEventListener("click", () => {
-  let recordMessage = new ROSLIB.Message({ data: `0, ${inputData}` });
+  let recordMessage = new ROSLIB.Message({ data: `0, ${rosbagName}` });
   // let recordMessage = new ROSLIB.Message({ data: `0, ${inputData}` });
 
   rosbagSave.publish(recordMessage);
@@ -318,7 +319,7 @@ let countdownOn = false;
 
 let save = document.getElementById("rosbag-save");
 save.addEventListener("click", () => {
-  let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
+  let recordMessage = new ROSLIB.Message({ data: `1, ${rosbagName}` });
   // let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
 
   rosbagSave.publish(recordMessage);
@@ -333,7 +334,7 @@ let replay = document.getElementById("rosbag-replay");
 replay.addEventListener("click", () => {
   console.log("testify");
   countdownOn = replayData = "1";
-  let replayMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
+  let replayMessage = new ROSLIB.Message({ data: `1, ${rosbagName}` });
   controller = controllers.NO_CONTROLLER;
   dropdownSelect.innerHTML = "None";
   rosbagReplay.publish(replayMessage);
