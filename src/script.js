@@ -20,13 +20,12 @@ import VirtualJoystick, {
   move,
 } from "./virtualJoystick";
 import { createChart, myChart } from "./chart";
-
-const rosbridge_endpoint = process.env.ROSBRIDGE || "ws://192.168.50.25:9090";
+const query = new URLSearchParams(window.location.search).get("socket");
+const rosbridge_endpoint = query || "ws://192.168.50.25:9090";
 console.log(rosbridge_endpoint);
 //Map
 
 // Debug
-// const gui = new dat.GUI();
 const maxDiff = 100;
 
 // Canvas
@@ -39,8 +38,6 @@ const scene = new THREE.Scene();
 const geometry = new THREE.TorusGeometry(0.7, 0.2, 16, 100);
 
 //line
-
-// let positions;
 
 const lineGeometry = new THREE.BufferGeometry();
 lineGeometry.setDrawRange(0, 2);
@@ -150,21 +147,6 @@ directionalLight.position.set(0, 1, 0);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-// const light = new THREE.PointLight(0xc4c4c4, 10);
-// light.position.set(0, 300, 500);
-// scene.add(light);
-
-// const light2 = new THREE.PointLight(0xc4c4c4, 10);
-// light2.position.set(500, 100, 0);
-// scene.add(light2);
-
-// const light3 = new THREE.PointLight(0xc4c4c4, 10);
-// light3.position.set(0, 100, -500);
-// scene.add(light3);
-
-// const light4 = new THREE.PointLight(0xc4c4c4, 10);
-// light4.position.set(-500, 300, 500);
-// scene.add(light4);
 /* Materials*/
 
 let loader = new GLTFLoader();
@@ -323,7 +305,7 @@ let save = document.getElementById("rosbag-save");
 save.addEventListener("click", () => {
   let recordMessage = new ROSLIB.Message({ data: `1, ${rosbagName}` });
   // let recordMessage = new ROSLIB.Message({ data: `1, ${inputData}` });
-
+  console.log({ data: `1, ${rosbagName}` });
   rosbagSave.publish(recordMessage);
   stop.style.display = "block";
   save.style.display = "none";
@@ -346,33 +328,44 @@ replay.addEventListener("click", () => {
 });
 
 let timer = document.getElementById("timer");
-
 //Timer start
-
 setInterval(() => {
   if (startTime) {
-    console.log("triggered!");
-    let delta = 0;
-    if (timerOn) {
-      delta = Math.floor((Date.now() - startTime) / 1000);
-      inputData = delta;
-      console.log(delta, "heyy");
-    } else if (countdownOn) {
-      delta = inputData - Math.floor((Date.now() - startTime) / 1000);
-    }
-
+    let delta = robotData.rosTime - Math.floor((Date.now() - startTime) / 1000);
+    console.log(robotData.selectedRosbag);
     timer.innerHTML = `${delta}`;
-    console.log(delta);
-    timer.style.color = "red";
-    if (delta <= 0 && countdownOn) {
+    if (delta <= 0) {
       startTime = undefined;
       timer.innerHTML = "";
-      controller = controllers.GAMEPAD;
-      dropdownSelect.innerHTML = "Gamepad";
-      countdownOn = false;
     }
   }
+  //To increase precision
 }, 1000);
+
+// setInterval(() => {
+//   if (startTime) {
+//     console.log("triggered!");
+//     let delta = 0;
+//     if (timerOn) {
+//       delta = Math.floor((Date.now() - startTime) / 1000);
+//       inputData = delta;
+//       console.log(delta, "heyy");
+//     } else if (countdownOn) {
+//       delta = inputData - Math.floor((Date.now() - startTime) / 1000);
+//     }
+
+//     timer.innerHTML = `${delta}`;
+//     console.log(delta);
+//     timer.style.color = "red";
+//     if (delta <= 0 && countdownOn) {
+//       startTime = undefined;
+//       timer.innerHTML = "";
+//       controller = controllers.GAMEPAD;
+//       dropdownSelect.innerHTML = "Gamepad";
+//       countdownOn = false;
+//     }
+//   }
+// }, 1000);
 
 //Countdown
 // setInterval(() => {
@@ -534,9 +527,13 @@ robotData.setAttitudeString("(1.0, 1.0, 1.0)");
 robotData.setGimbalStatusString("(15.6, 52.4, 17.3, 52.4)");
 robotData.setESCStatusString("[0, 0, 0, 0]");
 robotData.publishESCStatus("esc-status");
-robotData.setRosbagNames("rosbag-1, rosbag-2, rosbag-3");
+// robotData.setRosbagNames("rosbag-1, rosbag-2, rosbag-3");
 robotData.publishRosbagList("rosbag-list");
 robotData.publishImu("imu");
+
+// add logic to achieve it!!
+robotData.setSelectedRosbag("rosdata, 30");
+
 const rosbagList = document.getElementById("rosbag-list");
 
 let selectedRosbag = undefined;
@@ -594,6 +591,9 @@ rosbagListTopic.subscribe(function (message) {
   robotData.publishRosbagList("rosbag-list");
 });
 
+rosbagTimeTopic.subscribe(function (message) {
+  robotData.setSelectedRosbag(message.data);
+});
 let lineCounter = 2;
 
 let samplingCounter = 0;

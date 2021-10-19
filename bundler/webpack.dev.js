@@ -12,6 +12,7 @@ module.exports = merge(commonConfiguration, {
   devServer: {
     host: "0.0.0.0",
     port: portFinderSync.getPort(5500),
+    historyApiFallback: true,
     contentBase: "./dist",
     watchContentBase: true,
     open: true,

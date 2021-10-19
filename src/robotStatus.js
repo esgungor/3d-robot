@@ -69,6 +69,7 @@ class RobotStatus {
   };
 
   rosbagNames = [];
+  rosTime = 0;
   constructor(robotID, battery, position = { x: 0, y: 0, z: 0 }) {
     this.robotID = robotID;
     this.battery = battery;
@@ -224,6 +225,10 @@ class RobotStatus {
   publishRosbagList(elementID) {
     const list = document.getElementById(elementID);
     this.rosbagNames.forEach((element) => {
+      if (document.getElementById(element) !== null) {
+        console.log("always");
+        return;
+      }
       const listItem = document.createElement("li");
       const link = document.createElement("a");
       link.className = "dropdown-item";
@@ -326,7 +331,14 @@ class RobotStatus {
     );
   }
   setRosbagNames(rosbagStr) {
+    console.log(rosbagStr);
+
+    rosbagStr = rosbagStr.replace(/"/g, "");
     this.rosbagNames = rosbagStr.split(", ");
+  }
+  setSelectedRosbag(rosTime) {
+    console.log(rosTime);
+    this.rosTime = parseInt(rosTime);
   }
 }
 

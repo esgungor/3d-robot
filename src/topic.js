@@ -97,7 +97,7 @@ export const getTopics = (ros) => {
 
   let rosbagTimeTopic = new ROSLIB.Topic({
     ros: ros,
-    name: "/rosbag/list",
+    name: "/rosbag/duration",
     messageType: "std_msgs/Float64",
   });
   return {
