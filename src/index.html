@@ -260,16 +260,31 @@
         <input id="rosbag-name" type="text" class="form-input mt-4" />
         <span id="timer" class="text-center"></span>
 
-        <div class="rosbag mt-4">
-          <div class="btn btn-primary" id="rosbag-save">
+          <div class="btn btn-primary mt-2" id="rosbag-save">
             <i class="fas fa-record-vinyl me-2"></i>Save
           </div>
-          <div class="btn btn-primary" id="rosbag-stop" style="display: none">
+          <div class="btn btn-primary mt-2" id="rosbag-stop" style="display: none">
             <i class="fas fa-stop me-2"></i>
             Stop
           </div>
 
-          <div class="btn btn-primary" id="rosbag-replay">
+          <!-- <div class="btn btn-primary" id="rosbag-replay">
+            <i class="fas fa-undo me-2"></i>Replay
+          </div> -->
+      </div>
+      <div class="rosbag-data d-flex flex-column justify-center">
+      <div class="dropdown mt-2 text-center">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuRosbag" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Select ROS Record
+        </button>
+        <ul id="rosbag-list" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+         
+        </ul>
+      </div>
+       
+      
+          <div class="btn mt-2 btn-primary" id="rosbag-replay">
             <i class="fas fa-undo me-2"></i>Replay
           </div>
         </div>

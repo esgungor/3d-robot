@@ -265,6 +265,8 @@ let {
   rosbagReplay,
   rosbagSave,
   log,
+  rosbagListTopic,
+  rosbagTimeTopic,
 } = getTopics(ros);
 let testX = 0;
 
@@ -334,7 +336,8 @@ let replay = document.getElementById("rosbag-replay");
 replay.addEventListener("click", () => {
   console.log("testify");
   countdownOn = replayData = "1";
-  let replayMessage = new ROSLIB.Message({ data: `1, ${rosbagName}` });
+  let replayMessage = new ROSLIB.Message({ data: `1, ${selectedRosbag}` });
+  console.log({ data: `1, ${selectedRosbag}` });
   controller = controllers.NO_CONTROLLER;
   dropdownSelect.innerHTML = "None";
   rosbagReplay.publish(replayMessage);
@@ -531,8 +534,16 @@ robotData.setAttitudeString("(1.0, 1.0, 1.0)");
 robotData.setGimbalStatusString("(15.6, 52.4, 17.3, 52.4)");
 robotData.setESCStatusString("[0, 0, 0, 0]");
 robotData.publishESCStatus("esc-status");
-
+robotData.setRosbagNames("rosbag-1, rosbag-2, rosbag-3");
+robotData.publishRosbagList("rosbag-list");
 robotData.publishImu("imu");
+const rosbagList = document.getElementById("rosbag-list");
+
+let selectedRosbag = undefined;
+rosbagList.addEventListener("click", (e) => {
+  document.getElementById("dropdownMenuRosbag").innerHTML = e.target.id;
+  selectedRosbag = e.target.id;
+});
 imu.subscribe(function (message) {
   robotData.setImuString(message.data);
   robotData.publishImu("imu");
@@ -576,6 +587,11 @@ escStatus.subscribe(function (message) {
 gimbalRead.subscribe(function (message) {
   robotData.setGimbalStatusString(message.data);
   robotData.publishGimbalRead("gimbal-angle");
+});
+
+rosbagListTopic.subscribe(function (message) {
+  robotData.setRosbagNames(message.data);
+  robotData.publishRosbagList("rosbag-list");
 });
 
 let lineCounter = 2;

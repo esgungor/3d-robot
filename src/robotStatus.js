@@ -68,6 +68,7 @@ class RobotStatus {
     yawGroundAngle: 0,
   };
 
+  rosbagNames = [];
   constructor(robotID, battery, position = { x: 0, y: 0, z: 0 }) {
     this.robotID = robotID;
     this.battery = battery;
@@ -219,6 +220,20 @@ class RobotStatus {
     const htmlObject = document.getElementById(elementID);
     htmlObject.innerHTML = `<strong>W1: </strong>${this.escStatus.w1} <strong>W2: </strong>${this.escStatus.w2} <strong>W3: </strong>${this.escStatus.w3}<strong> W4: </strong>${this.escStatus.w4}`;
   }
+
+  publishRosbagList(elementID) {
+    const list = document.getElementById(elementID);
+    this.rosbagNames.forEach((element) => {
+      const listItem = document.createElement("li");
+      const link = document.createElement("a");
+      link.className = "dropdown-item";
+      link.innerText = element;
+      link.id = element;
+
+      listItem.appendChild(link);
+      list.appendChild(listItem);
+    });
+  }
   setESCAngleString(escStr) {
     escStr = escStr.replace("[", "");
     escStr = escStr.replace("]", "");
@@ -309,6 +324,9 @@ class RobotStatus {
       pitchGroundAngle,
       yawGroundAngle
     );
+  }
+  setRosbagNames(rosbagStr) {
+    this.rosbagNames = rosbagStr.split(", ");
   }
 }
 
